@@ -1,0 +1,224 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>代客联盟</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script src="../script/api.js"></script>
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+<footer class="m-tabbar root-tab" id="tabbar"></footer>
+
+</body>
+<script id="nav_tpl" type="text/html">
+    {{each list as data}}
+    {{if data.id==1}}
+    <a href="#" class="tabbar-item tabbar-active">
+                    <span class="tabbar-icon">
+                        <i class="icon iconfont navactive icon-{{data.icon}}"></i>
+                    </span>
+        <span class="tabbar-txt">{{data.title}}</span>
+    </a>
+    {{else}}
+    <a href="#" class="tabbar-item tabbar">
+                     <span class="tabbar-icon">
+                        <i class="icon iconfont icon-{{data.icon}}"></i>
+                    </span>
+        <span class="tabbar-txt">{{data.title}}</span>
+    </a>
+    {{/if}}
+    {{/each}}
+</script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+  //默认导航
+  var navs = [
+    {
+      id: 1,
+      name: "spread",
+      icon: "shouyi",
+      title: "推广",
+      url: "spread.html",
+      scaleEnabled: false,
+      reload: false,
+      bounces: false
+    },
+    {
+      id: 2,
+      name: "partner",
+      icon: "woshou",
+      title: "合伙人",
+      url: "partner.html",
+      scaleEnabled: false,
+      reload: false,
+      bounces: false
+    }
+    // , {
+    //   id: 3,
+    //   name: "xueyuan",
+    //   icon: "jiangfa",
+    //   title: "学院",
+    //   url: "xueyuan.html",
+    //   scaleEnabled: false,
+    //   reload: false,
+    //   bounces: false
+    // }, {
+    //   id: 4,
+    //   name: "user",
+    //   icon: "yonghu",
+    //   title: "我的",
+    //   url: "user.html",
+    //   scaleEnabled: false,
+    //   reload: true,
+    //   bounces: true
+    // }
+  ];
+
+
+  apiready = function () {
+    api.setAppIconBadge({
+      badge: 0
+    });
+    //市场
+    localStorage.setItem("market", "common");
+    //来源
+    localStorage.setItem("source", "daikelianmeng");
+    localStorage.setItem("deviceId", api.deviceId);
+    if (!localStorage.token) {
+      localStorage.token = "";
+    }
+    //设置状态栏样式为黑色
+    api.setStatusBarStyle({
+      style: 'dark',
+      color: 'rgba(255,255,255,0)'
+    });
+    var tabbar = $api.byId('tabbar');
+    $api.fixTabBar(tabbar);
+    //登录推送设备
+    addPushinfo();
+    //载入
+    api.showProgress({title: "", text: "", modal: true});
+    //加载导航
+    $.ajax({
+      url: server_url("column"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        market: localStorage.getItem("market"),
+        source: localStorage.getItem("source")
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          //判断版本更新
+          var rs = data.data.rs;
+          var flag = localStorage.getItem("updateFlag");
+          if (rs &&rs.ver > version && flag!=1) {
+            //更新
+            version_control(rs);
+            //下次不再提示更新
+          }
+          navs = data.data.column;
+          api.hideProgress();
+        } else {
+          neterr();
+        }
+        showNav(navs);
+      },
+      error: function () {
+        neterr();
+      }
+    })
+
+    api.hideProgress();
+  }
+
+  function showNav(navArr) {
+    if (navArr.length > 0) {
+      navs = navArr;
+    }
+    var html = template('nav_tpl', {list: navs});
+    $('#tabbar').append(html);
+    getframe(navs[0]);
+  }
+
+  //导航跳转
+  function getframe(data) {
+    var hh;
+    if ($('#tabbar').length > 0) {
+      hh = $api.dom('#tabbar').offsetHeight;
+    } else {
+      hh = 0;
+    }
+    api.openFrame({
+      name: data.name,
+      url: data.url,
+      bounces: data.bounces,
+      softInputBarEnabled: false,
+      reload: data.reload,
+      pageParam: data.pageParam,
+      rect: {
+        x: 0,
+        y: api.safeArea.top,
+        w: 'auto',
+        h: api.winHeight - hh-api.safeArea.top,
+      }
+    });
+    //调整 frame 到前面
+    // if (data.sub) {
+    //   for (var i = 0; i < data.sub.length; i++) {
+    //     api.bringFrameToFront({
+    //       from: data.sub[i]
+    //     });
+    //   }
+    // }
+  }
+
+  //修改导航点击后的样式
+  $("#tabbar").on("click", "a", function () {
+    if (!$(this).hasClass("tabbar-active")) {
+
+      getframe(navs[$(this).index()]);
+
+      $(this).addClass("tabbar-active");
+      $(this).siblings("a").removeClass("tabbar-active");
+      $(this).siblings("a").addClass("tabbar");
+      $("#tabbar a").each(function () {
+        var eq = $(this).index();
+        if ($(this).hasClass("tabbar-active")) {
+          $(this).children(".tabbar-icon").html(" <i class='icon iconfont navactive icon-" + navs[eq].icon + "'></i>");
+        } else {
+          $(this).children(".tabbar-icon").html(" <i class='icon iconfont icon-" + navs[eq].icon + "'></i>");
+        }
+      });
+    }
+  });
+
+  function ctab(eq, pageParam) {
+    for (var n in navs) {
+      if (navs[n].id == eq) {
+        navs[n].pageParam = pageParam;
+        $("#tabbar a:eq(" + n + ")").click();
+      }
+    }
+  }
+
+</script>
+
+</html>

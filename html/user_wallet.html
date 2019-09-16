@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <script src="../js/common.js"></script>
+    <title>我的钱包</title>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="myprofile_wallet">
+        <div class="account_balance">
+            <div class="ab_info">
+                <div class="ab_num" id="zhye">0.00</div>
+                <div class="ab_text">账户余额(元)</div>
+            </div>
+            <div class="detail_btn" onclick=openwin_header("user_cash","提现","user_cash.html",{},true)>提现</div>
+            <div class="wallet_cash">
+                <div class="wallet_num flof borr">
+                    <div class="w_num" id="zsr">0.00</div>
+                    <div class="w_text">总收入(元)</div>
+                </div>
+                <div class="wallet_num flof">
+                    <div class="w_num" id="ytx">0.00</div>
+                    <div class="w_text">已提现(元)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+  var token = localStorage.getItem("userToken");
+  var deviceId = localStorage.getItem("deviceId");
+  apiready = function () {
+    api.setRefreshHeaderInfo({
+      loadingImg: 'widget://image/ref.png',
+      bgColor: '#ccc',
+      textColor: '#ffffff',
+      textDown: '下拉刷新',
+      textUp: '松开刷新'
+    }, function (ret, err) {
+      setTimeout(function () {
+        api.refreshHeaderLoadDone();
+        reload();
+      }, 500);
+    });
+    getWallet();
+  }
+
+  function getWallet() {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("wallet"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var wInfo = data.data;
+          $("#zhye").text(wInfo.use_income);
+          $("#ytx").text(wInfo.used_income);
+          $("#zsr").text(wInfo.total_income);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+</script>
+</html>

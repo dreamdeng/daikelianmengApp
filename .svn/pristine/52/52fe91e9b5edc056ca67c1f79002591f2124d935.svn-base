@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>代客联盟</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/user.css" />
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+</head>
+
+<body>
+    <div class="myprofile_page2" id="myprofile_page2">
+        <div class="myprofile_main">
+            <div class="user_info">
+                <div class="head_portrait" onclick='openWithCheckLogin( "user_info", "基本信息", "user_info.html",{},true)'>
+                    <img src="../image/tx.png" id="cimg">
+                </div>
+                <div class="account_num" onclick='openWithCheckLogin( "user_info", "基本信息", "user_info.html",{},true)'>
+                    <div class="telephone">
+                        <div id="phone" style="float: left;"></div>
+                        <div class="partner_txt"><i class="iconfont icon-dengji-copy partner_icon" id="level_icon" style="background-repeat: no-repeat;background-size: 100%;background-image: url('../image/t.png');color: #fff;"></i><span id="level_name"></span></div>
+                    </div>
+                    <div class="invitation_code"><span id="invNum" style="float: left;"></span><span id="clipCode" class="clipCode">复制</span></div>
+                </div>
+                <div class="partner">
+
+                </div>
+                <div class="news" onclick='openWithCheckLogin( "user_messages", "消息中心", "user_messages.html",{},true)'>
+                    <div class="iconfont news_icon">&#xe620</div>
+                    <div class="news_tx" style="display: none;" id="news"></div>
+                </div>
+            </div>
+            <div class="user_capital">
+                <div class="all_capital">
+                    <div class="capital_num" id="total_income">0.00</div>
+                    <div class="capital_txt">总收入（元）</div>
+                </div>
+                <div class="all_capital" onclick='openWithCheckLogin( "user_wallet", "可提现", "user_wallet.html",{},true)'>
+                    <div id="use_income" class="capital_num">
+                        0.00
+                    </div>
+                    <div class="capital_txt">可提现（元）</div>
+                </div>
+                <div class="all_capital">
+                    <div class="capital_num" id="used_income">0.00</div>
+                    <div class="capital_txt">已提现（元）</div>
+                </div>
+                <div class="all_capital" style="padding-top: 9px;" onclick='openWithCheckLogin( "user_cash", "提现", "user_cash.html",{},true)'>
+                    <div class="capital_btn">提现</div>
+                </div>
+            </div>
+            <div class="uers_project">
+                <div class='uers_01' onclick=' openWithCheckLogin("user_orders","订单列表","user_orders.html",{},true)'>
+                    <i class="icon iconfont icon-dengji-"></i>
+                    <div class="project_tit">订单列表</div>
+                </div>
+                <div class='uers_01' onclick='openWithCheckLogin( "user_invite_list", "我的邀请", "user_invite_list.html",{},true)'>
+                    <i class="icon iconfont icon-Target-Group"></i>
+                    <div class="project_tit">我的邀请</div>
+                </div>
+                <div class='uers_01'>
+                    <i class="icon iconfont icon-jinrong-9"></i>
+                    <div class="project_tit">价格表</div>
+                </div>
+            </div>
+        </div>
+        <div class="myprofile_list">
+            <ul>
+                <li class="myprofile_li" onclick='openWithCheckLogin( "poster", "邀请海报", "poster.html",{},true)'>
+                    <i class="icon iconfont icon-jiangli- uli_img flof"></i>
+                    <div class="uli_tit flof">邀请海报</div>
+                    <i class="icon iconfont icon-more uli_jt flor"></i>
+                </li>
+                <!--<li class="myprofile_li" onclick=openWithCheckLogin("user_bounty","我的奖励金","user_bounty.html",{},true)>-->
+                <!--<i class="icon iconfont icon-Financial-Care uli_img flof"></i>-->
+                <!--<div class="uli_tit flof">我的奖励金</div>-->
+                <!--<i class="icon iconfont icon-more uli_jt flor"></i>-->
+                <!--</li>-->
+                <li class="myprofile_li" onclick='openWithCheckLogin( "user_info", "基本信息", "user_info.html",{},true)'>
+                    <i class="icon iconfont icon-shenhe uli_img flof"></i>
+                    <div class="uli_tit flof">基本信息</div>
+                    <i class="icon iconfont icon-more uli_jt flor"></i>
+                </li>
+                <li class="myprofile_li" onclick='openwin_header_in( "user_setting", "设置", "user_setting.html",{},true)'>
+                    <i class="icon iconfont icon-shezhi- uli_img flof"></i>
+                    <div class="uli_tit flof">设置</div>
+                    <i class="icon iconfont icon-more uli_jt flor"></i>
+                </li>
+                <li class="myprofile_li" id="addwx">
+                    <i class="icon iconfont icon-weixin uli_img flof"></i>
+                    <div class="uli_tit flof">官方微信</div>
+                    <i class="icon iconfont icon-more uli_jt flor"></i>
+                </li>
+                <li class="myprofile_li" onclick='openwin_header_in("document", "关于我们", "document.html",{docId:11},true)'>
+                    <i class="icon iconfont icon-fengkong- uli_img flof"></i>
+                    <div class="uli_tit flof">关于我们</div>
+                    <i class="icon iconfont icon-more uli_jt flor"></i>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    apiready = function() {
+        //设置下拉刷新
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/ref.png',
+            bgColor: '#ccc',
+            textColor: '#ffffff',
+            textDown: '下拉刷新',
+            textUp: '松开刷新'
+        }, function(ret, err) {
+            setTimeout(function() {
+                api.refreshHeaderLoadDone();
+                reload();
+                // checkLogin();
+            }, 500);
+        });
+        checkLogin();
+    }
+    var defaultuser = {
+        "userinfo": {
+            "cimg": "../image/tx.png",
+            "id": 0,
+            "level": 1,
+            "mobile": "用户",
+            "invite_code": "未登录",
+            "level_name": "游客"
+        },
+        "msg": 0,
+        "use_income": "0.00",
+        "used_income": "0.00",
+        "total_income": "0.00",
+        "wx": ""
+    }
+
+    //检测是否用户有登录
+    function checkLogin() {
+        var token = localStorage.getItem("userToken");
+        // var de = localStorage.getItem("deviceId");
+        // console.log(de);
+        // console.log(token);
+        if (token) {
+            api.showProgress({
+                title: "",
+                text: "",
+                modal: true
+            });
+            $.ajax({
+                url: server_url("resume"),
+                method: "POST",
+                dataType: "json",
+                data: {
+                    deviceid: localStorage.getItem("deviceId"),
+                    token: token
+                },
+                success: function(data) {
+                    if (data) {
+                        if (data.code == 0) {
+                            showUserInfo(data.data);
+                            api.hideProgress();
+                        } else {
+                            btToast(data.msg, 2000);
+                            if (data.code == "50001") {
+                                //登录超时
+                                showUserInfo(defaultuser);
+                                localStorage.removeItem("userToken");
+                                setTimeout(function() {
+                                    openwin_header("register", "登录", "register.html", {}, true);
+                                    api.hideProgress();
+                                }, 2000)
+                            }
+                        }
+                    } else {
+                        neterr();
+                        api.hideProgress();
+                    }
+                },
+                error: function() {
+                    // btToast("系统繁忙，请稍后再试", 3000);
+                    neterr();
+                    showUserInfo(defaultuser);
+                    api.hideProgress();
+                }
+            })
+        } else {
+            //未登录
+            showUserInfo(defaultuser);
+            openwin_header("register", "登录", "register.html", {}, true);
+        }
+    }
+
+
+    //显示用户信息
+    function showUserInfo(data) {
+        //{"userinfo":{"id":18,"level":1,"mobile":"13123456789","invite_code":"250168","level_name":"普通用户"},"msg":0,"use_income":0,"used_income":0,"total_income":0}
+        var resume = data;
+        var userinfo = resume.userinfo;
+
+        if (userinfo.cimg) {
+            $("#cimg").attr("src", userinfo.cimg);
+        }
+        if (userinfo.id) {
+            localStorage.setItem("curUserID", userinfo.id);
+        }
+        $("#phone").text(userinfo.mobile);
+        //显示复制按钮
+        if (isNaN(userinfo.invite_code)) {
+            $("#clipCode").hide();
+            $("#invNum").html(userinfo.invite_code);
+        } else {
+            $("#clipCode").show();
+            $("#invNum").data("code", userinfo.invite_code);
+            $("#invNum").html("邀请码:" + userinfo.invite_code);
+        }
+        //是否有新消息
+        if (resume.msg) {
+            $("#news").show();
+        }
+        $("#level_name").html(userinfo.level_name);
+        //用户图标颜色
+        // 铜：#975f48
+        // 金：#9d6b1a
+        // 银：#7c7c7c
+        var level_icon_color = "#975f48";
+        var levelImgPath = "../image/t.png";
+        switch (parseInt(userinfo.level)) {
+            case 2:
+                level_icon_color = "#975f48";
+                levelImgPath = "../image/t.png";
+                break;
+            case 3:
+                level_icon_color = "#7c7c7c";
+                levelImgPath = "../image/y.png";
+                break;
+            case 4:
+                level_icon_color = "#9d6b1a";
+                levelImgPath = "../image/j.png";
+                break;
+            default:
+                level_icon_color = "#975f48";
+                levelImgPath = "../image/t.png";
+        }
+        $("#level_icon").css("color", level_icon_color);
+        $("#level_icon").css("background-image", "url('" + levelImgPath + "')");
+        $("#level_name").css("border-color", level_icon_color);
+        $("#level_name").css("color", level_icon_color);
+
+        //显示收入
+        $("#total_income").text(resume.total_income);
+        $("#used_income").text(resume.used_income);
+        $("#use_income").text(resume.use_income);
+
+        $("#addwx").on("click", function() {
+            clip(resume.wx, '是否打开微信？', '微信号已复制');
+        })
+    }
+
+    $("#clipCode").on("click", function(e) {
+        var code = $("#invNum").data("code");
+        if (code != "") {
+            var clipBoard = api.require('clipBoard');
+            clipBoard.set({
+                value: code
+            }, function(ret, err) {
+                if (ret) {
+                    btToast("邀请码已复制", 2000);
+                }
+            });
+        }
+        e.stopPropagation();
+    })
+</script>
+
+</html>

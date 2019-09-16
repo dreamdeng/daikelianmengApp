@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>推广</title>
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <!--<script src="../js/flexible.js"></script>-->
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/spread.css">
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+</head>
+<body>
+<div class="tg_page2" id="tg_page2">
+    <div class="partner_tab">
+        <ul class="table_frist">
+            <!--<li class="f_active">-->
+                <!--<div class="zt"></div>-->
+                <!--贷款-->
+            <!--</li>-->
+            <li class="f_active">
+                <div class="zt"></div>
+                信用卡
+            </li>
+        </ul>
+        <div class="content_frist">
+            <!--<div class="wra_frist tgr f_active">-->
+                <!--<ul class="table_second">-->
+                    <!--<li class="s_active">推荐</li>-->
+                    <!--<li>大额CPS</li>-->
+                    <!--<li>小额CPS</li>-->
+                <!--</ul>-->
+                <!--<div class="content_second">-->
+                    <!--<div class="wra_second s_active">-->
+                        <!--<div class="tg_list" id="groom" style="display: none">-->
+                            <!--<div class="tg_title">热门推荐</div>-->
+                            <!--<div class="tg_ul" id="groom_list">-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="tg_list" id="quota" style="display: none;">-->
+                            <!--<div class="tg_title">大额CPS</div>-->
+                            <!--<div class="tg_ul" id="quota_list">-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="tg_list" id="ratio" style="display: none;">-->
+                            <!--<div class="tg_title">小额CPS</div>-->
+                            <!--<div class="tg_ul" id="ratio_list">-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <div class="wra_frist tgr f_active">
+                <div class="content_second">
+                    <div class="wra_second s_active">
+                        <div class="tg_list">
+                            <div class="tg_ul" id="creditlist">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--<div class="yijian" onclick='openwin_header("spread_share","一键推广","spread_share.html",{},true)'>-->
+    <!--<p>一键</p>-->
+    <!--<p>推广</p>-->
+<!--</div>-->
+</body>
+<script>
+  apiready = function () {
+    // getLoanList("");
+    getCreditlist();
+    binding();
+    // $("#tg_page2").css("margin-top",api.safeArea.top+10+"px");
+    // $api.fixStatusBar($api.byId("tg_page2"));
+  }
+
+  //获取产品列表
+  function getLoanList(type) {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("loanproduct"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        type: type
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          if (type == 1) {
+            showDe(data.data);
+          } else if (type == 2) {
+            showDb(data.data);
+          } else {
+            showProduct(data.data);
+          }
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        neterr();
+      }
+    })
+  }
+
+
+  function binding(){
+    $(".table_frist li").click(function () {
+      $(".table_frist li").removeClass("f_active");
+      $(this).addClass("f_active");
+      var f_index = $(this).index();
+      if (f_index == 1) {
+        //获取信用卡列表
+        getCreditlist();
+      }
+      $(".content_frist .wra_frist").removeClass("f_active");
+      $(".content_frist .wra_frist").eq(f_index).addClass("f_active");
+
+    });
+    $(".table_second li").click(function () {
+      $(this).siblings("li").removeClass("s_active");
+      $(this).addClass("s_active");
+      var f_index = $(this).index();
+      getLoanList(f_index);
+    });
+    $(".table_third li").click(function () {
+      $(".table_third li").removeClass("t_active");
+      $(this).addClass("t_active");
+      var f_index = $(this).index();
+      $(".content_third .wra_third").removeClass("t_active");
+      $(".content_third .wra_third").eq(f_index).addClass("t_active");
+    });
+    $(".deal_check").click(function () {
+      if ($(this).prop('checked')) {
+        $(this).prev(".iconfont").addClass("icon-duigou4");
+      } else {
+        $(this).prev(".iconfont").removeClass("icon-duigou4");
+      }
+    });
+    $(".close_tc").click(function () {
+      $(this).parents(".gm_tc").hide();
+    });
+  }
+  //
+  // $(document).ready(function () {
+  //
+  // })
+
+  function showProduct(list) {
+    //推荐
+    var groom = list.groom;
+    var quota = list.quota;
+    var ratio = list.ratio;
+    if (groom.length > 0) {
+      $("#groom_list").html(getHtmlData(groom));
+      $("#groom").show();
+    }else{
+      $("#groom").hide();
+    }
+    if (quota.length > 0) {
+      //大额
+      $("#quota_list").html(getHtmlData(quota));
+      $("#quota").show();
+    }else{
+      $("#quota").hide();
+    }
+    if (ratio.length > 0) {
+      //小额
+      $("#ratio_list").html(getHtmlData(ratio));
+      $("#ratio").show();
+    }else{
+      $("#ratio").hide();
+    }
+  }
+
+  function getHtmlData(list) {
+    var html = "";
+    for (var n in list) {
+      var p = list[n];
+      var desc = "";
+      var ratio = "";
+      var tag = "日结";
+      var tagClass = "tgcp_jz jz_rj";
+      if (p.tag == 2) {
+        tag = "周结";
+        tagClass = "tgcp_jz jz_zj";
+      } else if (p.tag == 3) {
+        tag = "月结"
+        tagClass = "tgcp_jz jz_yj";
+      }
+      if (p.balance == 1) {
+        //定比
+        desc = "奖励最高";
+        ratio = p.ratio_t + "元";
+      }
+      if (p.balance == 2) {
+        //定比
+        desc = "最高下款金额";
+        ratio = p.ratio + "%";
+      }
+      html += '<div class="tg_li" onclick=openwin_header_in("spread_merch","产品详情","spread_merch.html",{proid:' + p.id + '},true)>' +
+        '<div class="tgcp_info">' +
+        '<div class="tgcp_img">' +
+        '<img src="' + p.img + '"></div>' +
+        '<div class="tgcp_title">' +
+        '<div class="tgcp_tit">' + p.cname + '</div>' +
+        '<div class="tgcp_txt">' + desc + '<span>' + ratio + '</span></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="' + tagClass + '">' + tag + '</div>' +
+        '<div class="tgcp_sd">' + p.adlan + '</div>' +
+        '</div>'
+    }
+    return html;
+  }
+
+
+  function showDe(list) {
+    $("#quota_list").html(getHtmlData(list));
+    $("#groom").hide();
+    $("#ratio").hide();
+    $("#quota").show();
+  }
+
+  function showDb(list) {
+    $("#quota_list").html(getHtmlData(list));
+    $("#groom").hide();
+    $("#ratio").show();
+    $("#quota").hide();
+  }
+
+
+  function getCreditlist() {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("creditlist"),
+      method: "GET",
+      dataType: "JSON",
+      success: function (data) {
+        if (data.code == 0) {
+          $("#creditlist").html(getHtmlData(data.data));
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        neterr();
+      }
+    })
+  }
+</script>
+</html>

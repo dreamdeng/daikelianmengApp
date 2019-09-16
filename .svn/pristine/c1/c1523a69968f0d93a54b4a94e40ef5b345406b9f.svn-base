@@ -1,0 +1,632 @@
+img {
+    width: 100%;
+}
+
+select {
+    outline: none;
+    border: none;
+    background: transparent;
+}
+
+input {
+    border: 0;
+    background: transparent;
+}
+
+html, body {
+    min-height: 100vh;
+    background: #f5f5f5;
+}
+
+.course_page {
+    /*margin-top: 0.6rem;*/
+}
+.course_page2 {
+    /*margin-top: 25px;*/
+}
+
+.search {
+    /*padding: 0.2rem 0.33rem;*/
+    background: #fff;
+}
+
+.search_k {
+    height: 0.93rem;
+    background: #f1f1f1;
+    line-height: 0.93rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.13rem;
+    padding: 0 0.25rem;
+}
+
+.ss_icon {
+    font-size: 0.43rem;
+    color: #818181;
+}
+
+.ss_input {
+    color: #818181;
+    height: 100%;
+    font-size: 0.36rem;
+}
+
+.search_k input::-webkit-input-placeholder {
+    color: #818181;
+}
+
+.search_k input::-moz-placeholder {
+    color: #818181;
+}
+
+.search_k input::-ms-input-placeholder {
+    color: #818181;
+}
+
+.course_table {
+    display: flex;
+    justify-content: center;
+    background: #fff;
+}
+
+.course_table li {
+    width: 50%;
+    font-size: 0.39rem;
+    border-bottom: 1px solid transparent;
+    text-align: center;
+    color: #999999;
+    height: 1.33rem;
+    line-height: 1.33rem;
+}
+
+.course_table li.c_active {
+    color: #fc9752;
+    border-bottom: 1px solid #fc9752;
+}
+
+.course_war {
+    display: none;
+}
+
+.course_content > .c_active {
+    display: block;
+}
+
+.ke_info {
+    padding: 0.71rem 0.59rem;
+    background: #fff;
+}
+
+.kc_introduce {
+    margin-bottom: 0.72rem;
+}
+
+.kc_title {
+    font-size: 0.59rem;
+    color: #323232;
+    margin-bottom: 0.43rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.kc_text {
+    font-size: 0.36rem;
+    color: #323232;
+    line-height: 1.5;
+}
+
+.kc_join {
+    font-size: 0.36rem;
+    color: #999999;
+}
+
+.kc_join > span {
+    color: #fc9752;
+}
+
+.kc_li {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 0.43rem;
+}
+
+.ke_dj {
+    font-size: 0.86rem;
+}
+
+.kc_tgy .ke_dj {
+    color: #b3510f;
+}
+
+.kc_hhr .ke_dj {
+    color: #61778a;
+}
+
+.kc_jpr .ke_dj {
+    color: #fb8007;
+}
+
+.kc_name {
+    font-size: 0.44rem;
+    color: #323232;
+}
+
+.kc_num {
+    font-size: 0.32rem;
+    color: #999999;
+}
+
+.kc_num span {
+    color: #fc9752
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+}
+
+.gm_main {
+    width: 6.68rem;
+    height: 5.0rem;
+    position: absolute;
+    /*background: #fff;*/
+    border-radius: 1rem;
+    top: 30%;
+    left: 50%;
+    margin-left: -3.34rem;
+    text-align: center;
+    /*	padding: 0.99rem 0.8rem 0;
+        box-sizing: border-box;*/
+}
+
+.main_title {
+    font-size: 0.41rem;
+    color: #333333;
+    padding: 0 0.8rem;
+    margin: 0.99rem 0 0.43rem;
+}
+
+.main_txt {
+    font-size: 0.33rem;
+    color: #999999;
+    padding: 0.1rem 0.4rem;
+}
+
+.close_pop {
+    width: 0.53rem;
+    height: 0.53rem;
+    font-size: 0.5rem;
+    position: absolute;
+    top: 25%;
+    background: #cacbce;
+    color: #333;
+    border-radius: 50%;
+    font-weight: bold;
+    right: 10%;
+}
+
+.main_btn {
+    height: 1.37rem;
+    border-top: 1px solid #f1f1f1;
+    text-align: center;
+    line-height: 1.37rem;
+    color: #fc9752;
+    font-size: 0.41rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+/* 资讯列表 */
+.zx_list {
+    margin-top: 0.33rem;
+    padding: 0 0.33rem;
+    background: #fff;
+}
+
+.zx_li {
+    width: 100%;
+    height: 2.2rem;
+    border-bottom: 1px solid #eaeaea;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.zx_info {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 95%
+}
+
+.zx_img {
+    width: 1.33rem;
+    height: 1.33rem;
+    margin-right: 0.51rem;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.zx_main {
+    width: 75%;
+}
+
+.zx_title {
+    font-size: 0.44rem;
+    color: #333333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.45rem;
+}
+
+.zx_jj {
+    font-size: 0.33rem;
+    color: #999999;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 学院-资讯详情 */
+.zx_details {
+    padding: 0 0.33rem;
+}
+
+.details_top {
+    text-align: center;
+    overflow: hidden;
+}
+
+.top_title {
+    font-size: 0.39rem;
+    color: #444444;
+    margin: 0.71rem 0 0.27rem;
+}
+
+.top_time {
+    font-size: 0.31rem;
+    color: #bbc6cc;
+    margin-bottom: 0.4rem;
+}
+
+.details_banner {
+    font-size: 0;
+}
+
+.details_main {
+    margin-top: 0.64rem;
+}
+
+.details_td, .details_yd {
+    font-size: 0.36rem;
+    color: #afaeac;
+}
+
+.details_td {
+    margin-bottom: 1.0rem;
+}
+
+.details_yd {
+    margin-bottom: 0.33rem;
+}
+
+.details_td > span, .details_yd > span {
+    color: #444444;
+}
+
+.details_js {
+    text-indent: 0.72rem;
+    font-size: 0.36rem;
+    line-height: 1.5;
+}
+
+.details_sm {
+    position: absolute;
+    bottom: 0.33rem;
+    right: 0.33rem;
+    color: #afaeac;
+    font-size: 0.36rem;
+}
+
+.details_fx {
+    width: 3.33rem;
+    height: 3.33rem;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    margin-left: -1.67rem;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 0.5rem;
+    color: #fff;
+    display: none;
+}
+
+.details_icon {
+    font-size: 1.17rem;
+    text-align: center;
+    margin-top: 0.44rem;
+}
+
+.details_title {
+    margin-top: 0.65rem;
+    text-align: center;
+}
+
+/*课程内容*/
+.ks_btn {
+    width: 4.45rem;
+    height: 1.01rem;
+    line-height: 1.01rem;
+    text-align: center;
+    background: #f27435;
+    color: #fff;
+    margin: 0 auto;
+    font-size: 0.44rem;
+    border-radius: 1.01rem;
+}
+
+.kcnr_tab {
+    padding: 0 0.33rem;
+}
+
+.kcnr_ul {
+    position: fixed;
+    bottom: 0.24rem;
+    left: 0;
+    width: 100%;
+    overflow-y: hidden;
+}
+
+.kcnr_table {
+    padding: 0 0.33rem;
+    overflow: hidden;
+}
+
+.kcnr_table > li {
+    width: 2.83rem;
+    height: 0.72rem;
+    text-align: center;
+    line-height: 0.72rem;
+    font-size: 0.36rem;
+    color: #333333;
+    border-radius: 0.13rem;
+}
+
+.kcnr_table > li.nr_active {
+    background: #f27435;
+    color: #fff;
+}
+
+.kenr_war {
+    display: none;
+    overflow: hidden;
+}
+
+.course_content > .nr_active {
+    display: block;
+}
+
+.nr_tltle {
+    font-size: 0.49rem;
+    color: #323232;
+    margin-top: 0.85rem;
+}
+
+.nr_time {
+    font-size: 0.33rem;
+    color: #999999;
+}
+
+.nr_main {
+    margin-top: 0.48rem;
+}
+
+.nr_icon {
+    width: 1.49rem;
+    height: 1.49rem;
+    border-radius: 50%;
+    color: #ffffff;
+    background: #dddddd;
+    margin-right: 0.24rem;
+}
+
+.weixin_icon {
+    width: 0.77rem;
+    height: 0.65rem;
+    margin: 0 auto 0.11rem;
+}
+
+.yh_main {
+    padding: 0.57rem 0.59rem 0;
+}
+
+.yh_top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.47rem;
+    align-items: center;
+}
+
+.yh_info {
+    display: flex;
+    align-items: center;
+}
+
+.yh_icon {
+    width: 1.49rem;
+    height: 1.49rem;
+    border-radius: 50%;
+    color: #ffffff;
+    background: #dddddd;
+    margin: 0 0.17rem;
+}
+
+.dk_title {
+    font-size: 0.41rem;
+    color: #323232;
+    margin-bottom: 0.11rem;
+}
+
+.dk_kf {
+    font-size: 0.33rem;
+    color: #999999;
+}
+
+.xz_text {
+    line-height: 2;
+    font-size: 0.36rem;
+    color: #333333;
+}
+
+/* 学院-课程 */
+.search {
+    background: #fff;
+}
+
+.flor {
+    float: right;
+}
+
+.flof {
+    float: left;
+}
+
+.search_m {
+    padding: 0.2rem 0.33rem;
+}
+
+.search_xz {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    margin-top: 25px;
+}
+
+.search_xz .search_m {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search_qx {
+    display: none;
+    font-size: 0.41rem;
+    height: 0.93rem;
+    line-height: 0.93rem;
+}
+
+.search_xz .search_qx {
+    display: block;
+}
+
+.search_xz .search_k {
+    justify-content: left;
+    width: 80%;
+}
+
+.search_xz .ss_input {
+    width: 90%;
+    text-indent: 0.08rem;
+}
+
+.search_main {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    min-height: 100%;
+    width: 100%;
+    z-index: 1;
+    display: none;
+}
+
+.search_nr {
+    margin-top: 1.33rem;
+}
+
+.search_tj {
+    padding: 0 0.33rem;
+    /*margin-top: 1.9rem;*/
+    display: none;
+}
+
+.search_title {
+    padding: 0.47rem 0;
+    display: flex;
+    align-items: center;
+}
+
+.search_dt {
+    width: 0.17rem;
+    height: 0.17rem;
+    background: #f27435;
+    border-radius: 50%;
+    margin-right: 0.24rem;
+}
+
+.search_tit {
+    font-size: 0.39rem;
+    color: #444444;
+}
+
+.search_word {
+    display: flex;
+    /*justify-content: space-between;*/
+    flex-wrap: wrap;
+}
+
+.search_no {
+    height: 3.33rem;
+    border-bottom: 1px solid #dddddd;
+    overflow: hidden;
+    display: none;
+}
+
+.no_icon {
+    margin: 0.75rem 0 0.47rem;
+    font-size: 1.33rem;
+    color: #f27435;
+    text-align: center;
+}
+
+.no_word {
+    font-size: 0.33rem;
+    color: #444444;
+    text-align: center;
+}
+
+.search_have {
+    padding: 0 0.33rem;
+    display: none;
+}
+
+.search_jg {
+    display: none;
+}
+
+.word_li {
+    min-width: 2rem;
+    height: 0.88rem;
+    border: 1px solid #ebebeb;
+    background: #fff;
+    text-align: center;
+    line-height: 0.88rem;
+    margin-bottom: 0.21rem;
+    border-radius: 0.13rem;
+    margin-left: 0.21rem;
+    margin-right: 0.21rem;
+    padding: 0 0.21rem;
+}

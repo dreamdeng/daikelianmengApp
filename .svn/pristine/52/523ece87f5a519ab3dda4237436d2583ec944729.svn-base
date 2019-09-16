@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>代客联盟</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="../css/xueyuan.css" />
+    <link rel="stylesheet" type="text/css" href="../css/swiper.min.css" />
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/swiper.min.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+
+</head>
+<style>
+    body {
+        background: #f5f5f5;
+    }
+</style>
+
+<body>
+    <div class="good_box">
+        <div class="good_box_cont" id="goods_info">
+            <div class="goods_top swiper-container">
+                <div class="swiper-wrapper" id="img_src">
+
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+            <div class="goods_text">
+                <div class="goods_text_top">
+                    <div class="text_top_left">
+                        <div class="text_top_left_quan">券后价</div>
+                        <h2><span>￥</span>{{coupon_price}}</h2>
+                        <p>原价:￥{{min_group_price}}</p>
+                    </div>
+                    <div class="text_top_right">
+                        销量{{sold_quantity}}件
+                    </div>
+                </div>
+                <div class="goods_title">
+                    <p>{{title}}</p>
+                </div>
+                <div class="goods_img">
+                    <p><span>¥</span>{{coupon_discount}}元</p>
+                </div>
+            </div>
+            <div class="goods_deta">
+                <h1>商品详情</h1>
+                <p>{{goods_desc}}</p>
+            </div>
+        </div>
+        <div class="goods_bot">
+          <div class="goods_bot_cont">
+            <div class="goods_bot_left">
+              <h1>赚</h1>
+              <p><span>￥</span>100.00</p>
+            </div>
+            <div class="goods_bot_right">
+              <button type="button" name="button" class="oneself_btn">自买省</button>
+              <button type="button" name="button" class="share_btn">分享赚</button>
+            </div>
+          </div>
+        </div>
+    </div>
+</body>
+<script>
+    var goods_id = "";
+    apiready = function() {
+        goods_id = api.pageParam.goods_id;
+        goodsInfo(goods_id);
+    }
+
+    var vm = new Vue({
+        el: '#goods_info',
+        data: {
+            coupon_price: '',
+            min_group_price: '',
+            sold_quantity: '',
+            title: '',
+            coupon_discount: '',
+            goods_desc: ''
+        }
+    });
+
+    function goodsInfo(goods_id) {
+        var token = localStorage.getItem("userToken");
+        var deviceId = localStorage.getItem("deviceId");
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("good_detail"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                goods_id: goods_id,
+                deviceid: deviceId,
+                token: token
+            },
+            success: function(data) {
+                if (data.code == 0) {
+                    var html = '';
+                    var item = data.data;
+                    vm.title = item.goods_name;
+                    vm.min_group_price = item.min_group_price;
+                    vm.coupon_price = item.coupon_price;
+                    vm.sold_quantity = item.sold_quantity;
+                    vm.coupon_discount = item.coupon_discount;
+                    vm.goods_desc = item.goods_desc;
+                    var imgArr = JSON.stringify(item.goods_gallery_urls).split(',');
+                    for (var n = 0; n < imgArr.length; n++) {
+                        html += '<div class='+'swiper-slide'+'><img src=' + imgArr[n] + '></div>'
+                    }
+                    $("#img_src").html(html)
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+                var myswiper = new Swiper('.swiper-container', {
+                    autoplay: true, //可选选项，自动滑动
+                    pagination: {
+                        el: '.swiper-pagination',
+                    },
+                });
+            },
+            error: function(err) {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+
+</script>
+
+</html>

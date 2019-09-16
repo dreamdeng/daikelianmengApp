@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <link rel="stylesheet" type="text/css" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+
+    <title>订单详情</title>
+</head>
+
+<body>
+    <div class="myprofile_page">
+        <div class="partner_tab ">
+            <ul class="table_frist sort_list" id="data_time">
+                <li data-id="2" class="self">{{personal_time}}</li>
+                <li data-id="1" class="team">{{team_time}}</li>
+            </ul>
+            <div class="content_frist order_list">
+                <div class="wra_frist tgr f_active">
+                    <ul class="table_second" id="status_tag">
+                        <li class="s_active" data-id="5">全部订单</li>
+                        <li data-id="1">待结算</li>
+                        <li data-id="2">已结算</li>
+                        <li data-id="4">审核失败</li>
+                    </ul>
+                    <div class="content_second">
+                        <div class="wra_second s_active">
+                            <div class="myprofile_spread" id="order_text">
+                                <div class="spread_orderlist" v-for="site in sites">
+                                    <div class="spread_orderinfo">
+                                        <div class="spread_info_top">
+                                            <span><img src="../image/tx.png"></span>
+                                            <h1>{{site.mobile}}</h1>
+                                        </div>
+                                        <div class="goods_info">
+                                            <div class="goods_info_le" v-if="site.type=='1'">
+                                                <img :src="site.orders_img">
+                                            </div>
+                                            <div class="goods_info_le" v-else>
+                                                <img src="../image/tx.png">
+                                            </div>
+                                            <div class="goods_info_rg">
+                                                <h1>{{site.orders_title}}</h1>
+                                                <p>{{site.status_name}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="status_info">
+                                            <p class="info01" v-if="site.type=='1'">订单来源：<span>{{site.source}}</span></p>
+                                            <p class="info01" v-else>付费用户：<span>{{site.mobile}}</span></p>
+                                            <p class="info02" v-if="site.type=='1'">下单时间：<span>{{site.addtime}}</span></p>
+                                            <p class="info02" v-else>支付时间：<span>{{site.addtime}}</span></p>
+                                            <p class="info03" v-if="site.type=='1'">支付时间：<span class="spread_time">{{site.paytime}}</span></p>
+                                            <p class="info04" v-if="site.type=='1'">收货状态：<span>{{site.receive_status}}</span></p>
+                                            <p class="info05" v-if="site.type=='1'">拼多多订单编号：<span class="spread_cp">{{site.orders}}</span></p>
+                                            <p class="info05" v-else>订单编号：<span class="spread_cp">{{site.orders}}</span></p>
+                                            <p class="info06" v-if="site.type=='1'">付款金额：<span>{{site.money}}</span></p>
+                                            <p class="info06" v-else>说明：付款一日后自动转为可提现</p>
+                                        </div>
+                                        <div class="spread_info_bot">
+                                            预估收入：{{site.commision}}元
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    var only_time, sort;
+    apiready = function() {
+        only_time = api.pageParam.type;
+        sort = api.pageParam.sort;
+        getOrderlist(only_time, sort, 5);
+        title();
+    }
+    var vm = new Vue({
+        el: '#data_time',
+        data: {
+            personal_time: '',
+            team_time: ''
+        }
+    });
+    var obj = new Vue({
+        el: '#order_text',
+        data: {
+            sites: [{
+                source: '',
+                mobile: '',
+                orders: '',
+                orders_title: '',
+                orders_img: '',
+                commision: '',
+                paytime: '',
+                addtime: '',
+                status_name: '',
+                receive_status: '',
+                money: '',
+                source: ''
+            }]
+        }
+    });
+
+    function title() {
+        // 标题判断
+        if (only_time == 1) {
+            vm.personal_time = '个人推广（今日）';
+            vm.team_time = '团队推广（今日）';
+        } else if (only_time == 2) {
+            vm.personal_time = '个人推广（昨日）';
+            vm.team_time = '团队推广（昨日）';
+        } else if (only_time == 3) {
+            vm.personal_time = '个人推广（本月）';
+            vm.team_time = '团队推广（本月）';
+        } else if (only_time == 4) {
+            vm.personal_time = '个人推广（上月）';
+            vm.team_time = '团队推广（上月）';
+        }
+        // 团队类型判断
+        if (sort == 2) {
+            $(".sort_list li").eq(0).addClass('f_active').siblings().removeClass("f_active");
+        } else if (sort == 1) {
+            $(".sort_list li").eq(1).addClass('f_active').siblings().removeClass("f_active");
+        }
+    }
+
+    function getOrderlist(type, team, status) {
+        //type 1今日 2昨日 3 本月
+        //status 1待结算 2已结算 4审核失败 5全部订单
+        // team 1团队 2个人
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("orders_list"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                token: token,
+                deviceid: deviceId,
+                type: type,
+                team: team,
+                status: status
+            },
+            success: function(data) {
+              dd(data)
+                if (data.code == 0) {
+                    obj.sites = data.data;
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function() {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+
+    // 标题点击事件
+    $(".table_frist li").click(function() {
+        $(".table_frist li").removeClass("f_active");
+        $(this).addClass("f_active");
+        var f_index = $(this).attr('data-id');
+        var status_tag = $("#status_tag li.s_active").attr('data-id');
+        getOrderlist(only_time, f_index, status_tag);
+    });
+    // 状态点击事件
+    $(".table_second li").click(function() {
+        $(this).siblings("li").removeClass("s_active");
+        $(this).addClass("s_active");
+        var status_tag = $(this).attr('data-id');
+        var f_index = $(".table_frist li.f_active").attr('data-id');
+        getOrderlist(only_time, f_index, status_tag);
+    });
+</script>
+
+
+</html>

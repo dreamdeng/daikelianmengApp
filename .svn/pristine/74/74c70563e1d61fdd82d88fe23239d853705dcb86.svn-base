@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>注册</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="../css/register.css" />
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <!--<script type="text/javascript" src="../js/mvalidate.js"></script>-->
+</head>
+
+<body>
+    <div class="zc_page">
+        <div class="zc_logo">
+            <img src="../image/zc_logo.png">
+        </div>
+        <form class="zc_form" id="login_form">
+            <div class="zc_info">
+                <div class="zc_title">手机号码</div>
+                <div class="zc_input">
+                    <input type="text" placeholder="请输入手机号码" name="phone" id="phone">
+                </div>
+            </div>
+            <div class="zc_info">
+                <div class="zc_title">验证码</div>
+                <div class="zc_input">
+                    <input type="text" placeholder="请输入验证码" name="sms" id="sms">
+                    <div class="zc_hq flor" id="getsms" onclick=getsms()>获取验证码</div>
+                    <!--<div class="zc_fg flor"></div>-->
+                </div>
+            </div>
+            <div class="zc_deal">
+                <label class="zc_agree">
+                <div class="zc_checked">
+                    <span class="iconfont icon-duigou4"></span>
+                    <input class="deal_check" type="checkbox" checked="checked" id="yhxy">
+                </div>
+                <span>已阅读并同意</span>
+            </label>
+                <a href="javascript:;" onclick='openwin_header_in("document", "用户服务协议", "document.html",{docId:7},true)'>《用户服务协议》</a>
+            </div>
+        </form>
+        <div class="ks_btn" id="submit">开始使用</div>
+        <div class="ks_img"><img src="../image/bg_login.png" alt=""></div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    $(".deal_check").click(function() {
+        if ($(this).prop('checked')) {
+            $(this).parents(".zc_checked").css({
+                "background": "#f27435"
+            });
+        } else {
+            $(this).parents(".zc_checked").css({
+                "background": "#ffffff"
+            });
+        }
+    });
+    var cparam = "";
+    var exec_win = "";
+    var exec_fra = "";
+    var exec_fun = "";
+    var is_login = "";
+    //传过来的参数
+    apiready = function() {
+            cparam = api.pageParam;
+            if (cparam) {
+                exec_win = cparam.exec_win;
+                exec_fra = cparam.exec_fra;
+                exec_fun = cparam.exec_fun;
+                is_login = cparam.cparam.is_login;
+            }
+        }
+        //获取短信验证码
+    var inteval = "";
+    var send = false;
+    var hasSubmit = false;
+
+    $("#submit").click(function() {
+        if (!hasSubmit) {
+            hasSubmit = true;
+            var phone = $("#phone").val().trim();
+            if (!phone.match(/^0?1[3|4|5|6|7|8|9]\d{9}$/)) {
+                btToast("请输入正确的手机号", 2000);
+                hasSubmit = false;
+                return;
+            }
+            var sms = $("#sms").val().trim();
+            if (!sms) {
+                btToast("请输入验证码", 2000);
+                hasSubmit = false;
+                return;
+            }
+            if (!$("#yhxy").prop("checked")) {
+                btToast("请勾选用户协议", 2000);
+                hasSubmit = false;
+                return;
+            }
+            api.showProgress({
+                title: "",
+                text: "",
+                modal: true
+            });
+            if (is_login == 1) {
+                var openid = localStorage.getItem("openid");
+                var nickname = localStorage.getItem("nickname");
+                var wx_img = localStorage.getItem("wx_img");
+                var unionid=localStorage.getItem("unionid")
+                $.ajax({
+                    url: server_url("mlogin"),
+                    method: "POST",
+                    dataType: "json",
+                    data: {
+                        phone: phone,
+                        sms: sms,
+                        deviceid: localStorage.getItem("deviceId"),
+                        openid: openid,
+                        nickname: nickname,
+                        img: wx_img,
+                        unionid:unionid,
+                        market: "china_mobile"
+                    },
+                    success: function(data) {
+                        if (data) {
+                            if (data.code == 0) {
+                                localStorage.setItem("userToken", data.data.token);
+                                localStorage.setItem("user_phone", phone);
+                                reloadPartner();
+                                reloadXueyuan();
+                                if (data.data.is_code) {
+                                    //可填邀请码
+                                    openInviteCodePage();
+                                }
+                                if (data.data.is_inviter == true) {
+                                    openInviteCodePage();
+                                }
+                                loginCallback(data.data);
+                            } else {
+                                btToast(data.msg, 2000);
+                            }
+                        } else {
+                            neterr();
+                        }
+                        hasSubmit = false;
+                        api.hideProgress();
+                    },
+                    error: function() {
+                        btToast("系统繁忙，请稍后再试", 3000);
+                        hasSubmit = false;
+                        api.hideProgress();
+                    }
+                })
+            } else {
+                $.ajax({
+                    url: server_url("login"),
+                    method: "POST",
+                    dataType: "json",
+                    data: {
+                        phone: phone,
+                        sms: sms,
+                        deviceid: localStorage.getItem("deviceId"),
+                        market: "china_mobile",
+                        source: localStorage.getItem("source"),
+                        exec_win: exec_win,
+                        exec_fra: exec_fra,
+                        exec_fun: exec_fun
+                    },
+                    success: function(data) {
+                        if (data) {
+                            if (data.code == 0) {
+                                localStorage.setItem("userToken", data.data.token);
+                                localStorage.setItem("user_phone", phone);
+                                reloadPartner();
+                                setTimeout(function() {
+                                    api.openWin({
+                                        name: 'main',
+                                        url: './main.html',
+                                    });
+                                }, 1000)
+
+                                if (data.data.is_code) {
+                                    //可填邀请码
+                                    openInviteCodePage();
+                                }
+                                if (data.data.is_inviter == true) {
+                                    openInviteCodePage();
+                                }
+                                loginCallback(data.data);
+                            } else {
+                                btToast(data.msg, 2000);
+                            }
+                        } else {
+                            neterr();
+                        }
+                        hasSubmit = false;
+                        api.hideProgress();
+                    },
+                    error: function() {
+                        btToast("系统繁忙，请稍后再试", 3000);
+                        hasSubmit = false;
+                        api.hideProgress();
+                    }
+                })
+            }
+
+        }
+    })
+
+    function getsms() {
+        var phone = $("#phone").val().trim();
+        if (!phone.match(/^0?1[3|4|5|6|7|8|9]\d{9}$/)) {
+            btToast("请输入正确的手机号", 3000);
+            return;
+        }
+        if (!send) {
+            send = true;
+            $.ajax({
+                url: server_url("getsms"),
+                method: "POST",
+                dataType: "json",
+                data: {
+                    phone: phone
+                },
+                success: function(data) {
+                    if (data) {
+                        if (data.code == 0) {
+                            btToast("验证码发送成功", 2000);
+                            //倒计
+                            count(60);
+                        } else {
+                            api.toast(data.msg, 2000);
+                        }
+                    } else {
+                        neterr();
+                    }
+                }
+            })
+        }
+    }
+
+    function count(time) {
+        var count = time;
+        inteval = setInterval(function() {
+            if (count > 0) {
+                $("#getsms").text(count);
+                count -= 1;
+            } else {
+                send = false;
+                clearInterval(inteval);
+                $("#getsms").text("获取验证码");
+            }
+        }, 1000)
+    }
+
+    //登录后的跳转
+    function loginCallback(data) {
+        if (data.exec_fun) {
+            if (data.exec_fra) {
+                api.execScript({
+                    name: data.exec_win,
+                    frameName: data.exec_fra,
+                    script: data.exec_fun
+                });
+            } else {
+                api.execScript({
+                    name: data.exec_win,
+                    script: data.exec_fun
+                });
+            }
+        } else {
+            api.execScript({
+                name: 'root',
+                frameName: 'user',
+                script: 'reload()'
+            });
+        }
+        api.closeWin();
+    }
+</script>
+
+</html>

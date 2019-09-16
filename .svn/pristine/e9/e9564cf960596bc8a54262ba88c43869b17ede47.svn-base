@@ -1,0 +1,463 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>代客联盟</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="../css/xueyuan.css" />
+    <link rel="stylesheet" type="text/css" href="../css/swiper.min.css" />
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/swiper.min.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+</head>
+<style>
+    body {
+        background: #f5f5f5;
+    }
+</style>
+
+<body>
+    <div class="course_page">
+        <div class="search">
+            <div class="search_m">
+                <div class="search_k">
+                    <div class="iconfont icon-sousuo ss_icon"></div>
+                    <input class="ss_input" type="search" id="searchInput" placeholder="搜索优惠商品">
+                </div>
+                <div class="search_qx">取消</div>
+            </div>
+            <div class="goods-box-bot" id="sort_btn">
+                <ul>
+                    <li class="sort-active">综合</li>
+                    <li>佣金</li>
+                    <li>销量</li>
+                    <li class="price">
+                        <p>价格</p>
+                        <span>
+                    <i class="iconfont icon-less"></i>
+                    <i class="iconfont icon-moreunfold"></i>
+                  </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="search_main">
+            <div class="search_nr">
+                <div class="search_jg">
+                    <div class="search_no">
+                        <div class="iconfont icon-sad no_icon"></div>
+                        <div class="no_word">暂无数据，换个词搜搜</div>
+                    </div>
+
+                    <div class="search_have">
+                        <div class="search_title" id="search_wd">
+
+                        </div>
+                        <div class="have_results goods-list clearfix" id="result">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="search_tj">
+                    <div class="search_title">
+                        <div class="search_dt"></div>
+                        <div class="search_tit">热门搜索</div>
+                    </div>
+                    <div class="search_word" id="keywordList">
+                        <div class="word_li" onclick="keywordSearch(this)">小额贷</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="course_tab">
+            <!-- <ul class="course_table">
+            <li class="c_active" id="kc">课程</li>
+            <li>资讯</li>
+        </ul> -->
+            <div class="course_content">
+                <div class="course_war c_active">
+                    <div class="kc_banner swiper-container" id="goTolearn">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide"><img src="https://yanju001.oss-cn-beijing.aliyuncs.com/common/20190214/kecheng.png"></div>
+                            <div class="swiper-slide"><img src="https://yanju001.oss-cn-beijing.aliyuncs.com/common/20190214/kecheng.png"></div>
+                            <div class="swiper-slide"><img src="https://yanju001.oss-cn-beijing.aliyuncs.com/common/20190214/kecheng.png"></div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <div class="goods-box">
+                        <div class="goods-box-top">
+                            <div class="sort-list">
+                                <div id="newsort_list"></div>
+                            </div>
+                            <div class="sort-prev iconfont icon-moreunfold"></div>
+                        </div>
+                        <div class="goods-box-bot" id="goods_sort">
+                            <ul>
+                                <li class="sort-active">综合</li>
+                                <li class="price">
+                                    <p>佣金</p>
+                                    <span>
+                                  <i class="iconfont icon-less"></i>
+                                  <i class="iconfont icon-moreunfold"></i>
+                                </span>
+                                </li>
+                                <li class="price">
+                                    <p>销量</p>
+                                    <span>
+                                  <i class="iconfont icon-less"></i>
+                                  <i class="iconfont icon-moreunfold"></i>
+                                </span>
+                                </li>
+                                <li class="price">
+                                    <p>价格</p>
+                                    <span>
+                                  <i class="iconfont icon-less"></i>
+                                  <i class="iconfont icon-moreunfold"></i>
+                                </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="goods-list clearfix" id='goodsList'>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+<script type="text/javascript">
+    //课程/资讯
+    var lastIndex = 0;
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    var showPop = true;
+    apiready = function() {
+            binding();
+            $("#searchInput").on("click", function() {
+                showKeyWords();
+                $("#sort_btn").hide();
+                $(".search_title").show();
+            });
+            lunbo();
+            sort();
+            sortList();
+        }
+        //搜索
+        var page, keyword, opt_id, sort;
+    function search(page, keyword, opt, sort) {
+        var keyword = $("#searchInput").val();
+        var token = localStorage.getItem("userToken");
+        var deviceId = localStorage.getItem("deviceId")
+            //关键词查询
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("serach_goods"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                page: page,
+                keyword: keyword,
+                opt: opt,
+                sort: sort,
+                deviceid: deviceId,
+                token: token
+
+            },
+            success: function(data) {
+                if (data.code == 0) {
+                    $("#search_wd").html('');
+                    var result = data.data;
+                    if (result.length > 0) {
+                        showResult(result);
+                        $(".search_title").hide();
+                        $("#sort_btn").show();
+                    } else {
+                        $(".search_no").show();
+                        $(".search_have").hide();
+
+                    }
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function(data) {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+    //回车绑定
+    $("#searchInput").on('keypress', function(e) {
+        var keycode = e.keyCode;
+        if (keycode == '13') {
+            //搜索
+            search();
+        }
+    });
+
+    function keywordSearch(obj) {
+        var keyword = $(obj).text().trim();
+        if (keyword) {
+            $("#searchInput").val(keyword);
+            search();
+        }
+    }
+
+    function binding() {
+        $(".course_table li").click(function() {
+            $(".course_table li").removeClass("c_active");
+            $(this).addClass("c_active");
+            var f_index = $(this).index();
+            change(f_index + 1);
+            $(".course_content .course_war").removeClass("c_active");
+            $(".course_content .course_war").eq(f_index).addClass("c_active");
+
+        });
+        $(".close_pop").click(function() {
+            $(this).parents(".popup").hide();
+        });
+        //取消事件
+        $(".search_qx").click(function() {
+            cancel();
+            $("#sort_btn").hide();
+        })
+    }
+
+    function cancel() {
+        $(".search").removeClass("search_xz");
+        $(".course_tab").show();
+        $(".search_main").hide();
+        $("#searchInput").val("");
+    }
+
+    //显示关键词
+    function showKeyWords() {
+        $(".search").addClass("search_xz");
+        $(".course_tab").hide();
+        $(".search_no").hide();
+        $(".search_have").hide();
+        $.ajax({
+            url: server_url("keywords"),
+            method: "GET",
+            dataType: "JSON",
+            data: {},
+            success: function(data) {
+                if (data && data.code == 0) {
+                    var keywords = data.data;
+                    var html = "";
+                    for (var n in keywords) {
+                        html += '<div class="word_li" onclick="keywordSearch(this)">' + keywords[n].keyword + '</div>';
+                    }
+                    $("#keywordList").html(html);
+                    //显示关键词模块
+                    $(".search_main").show();
+                    $(".search_tj").show();
+                    $(".search_jg").show();
+                }
+            }
+        })
+
+    }
+
+    //显示搜索结果
+    function showResult(list) {
+        var html = '';
+        for (var n in list) {
+            //搜索内容
+            html += '<div class="goods-item" onclick=openwin_header_in("goods_details","商品详情","goods_details.html",{goods_id:' + list[n].goods_id + '},true)>' +
+                '<div class="goods-item-img"><img src="' + list[n].goods_thumbnail_url + '" alt=""></div>' +
+                '<div class="goods-item-cont">' +
+                '<div class="goods-cont-top ">' +
+                '<p>' + list[n].goods_name + '</p>' +
+                '</div>' +
+                '<div class="goods-cont-cen">' +
+                '<div class="goods-cont-cen-le">' +
+                '<span>' + list[n].coupon_discount + '</span>' +
+                '<span class="one">优惠券</span>' +
+                '</div>' +
+                '<div class="goods-cont-cen-rg">销量' + list[n].sold_quantity + '件</div>' +
+                '</div>' +
+                '<div class="goods-cont-bot">' +
+                '<div class="goods-cont-bot-le">' +
+                '<span>￥</span>' + list[n].min_group_price +
+                '</div>' +
+                '<div class="goods-cont-bot-rg">赚' + list[n].commission + '元</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>'
+        }
+        $("#result").html(html);
+        $("#goodsList").html(html);
+        $(".search_no").hide();
+        $(".search_have").show();
+    }
+
+    function reset() {
+        $("#kc").click();
+    }
+    // 轮播
+    function lunbo() {
+        var myswiper = new Swiper('.kc_banner', {
+            autoplay: true, //可选选项，自动滑动
+            pagination: {
+                el: '.swiper-pagination',
+            },
+        });
+    }
+    // 分类划动
+    function sort() {
+        var swiper = new Swiper('.sort-list', {
+            slidesPerView: 'auto',
+            spaceBetween: 8,
+        });
+    }
+    // 分类类目列表
+    function sortList() {
+        $("#newsort_list").html("");
+        var token = localStorage.getItem("userToken");
+        var deviceId = api.deviceId;
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("opt_list"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                token: token,
+                deviceid: deviceId,
+            },
+            success: function(data) {
+                if (data.code == 0) {
+                    var html = template('sort_list', {
+                        list: data.data
+                    });
+                    $("#newsort_list").append(html);
+                    // dd(html)
+                    goodsList();
+                    $("#newsort_list .sort_deta").eq(0).addClass("goods-active");
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+                more_in();
+
+            },
+            error: function() {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+
+    // 商品列表
+    var page, keyword, opt_id, sort_num;
+    function goodsList(page, keyword, opt_id, sort_num) {
+        var token = localStorage.getItem("userToken");
+        var deviceId = localStorage.getItem("deviceId")
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("serach_goods"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                deviceid: deviceId,
+                token: token,
+                page: page,
+                opt: opt_id,
+                sort: sort_num,
+                keyword: keyword
+            },
+            success: function(data) {
+                // dd(data)
+                if (data.code == 0) {
+                    $("#search_wd").html('');
+                    var result = data.data;
+                    if (result.length > 0) {
+                        showResult(result);
+                        // $(".search_title").hide();
+                        // $("#sort_btn").show();
+                    } else {
+                        $(".search_no").show();
+                        $(".search_have").hide();
+                    }
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+
+            },
+            error: function(data) {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+
+    }
+    // 类目筛选 点击事件
+
+    $("#newsort_list").on("click", ".sort_deta", function() {
+            opt_id = $(this).attr('data-id');
+            $(this).addClass('goods-active').siblings().removeClass('goods-active');
+            // 获取综合分类状态
+            sort_num = $("#goods_sort ul li.sort-active").attr('data-id');
+            goodsList(opt_id,sort_num);
+        })
+        // 更多
+
+    function more_in() {
+        $("#newsort_list .sort_deta:gt(4)").hide();
+    }
+    // 点击开始下拉
+    $(".goods-box-top").on("click", ".sort-prev", function() {
+            $("#newsort_list .sort_deta:gt(6)").toggle();
+            if ($(this).hasClass("icon-moreunfold")) {　　　　
+                $(this).removeClass("icon-moreunfold");
+                $(this).addClass("icon-less");
+            } else {　　　　
+                $(this).addClass("icon-moreunfold");
+                $(this).removeClass("icon-less");
+            }
+        })
+        //综合分类
+    $("#goods_sort").on("click", "ul li", function() {
+        sort_num = $(this).attr('data-id');
+        opt_id = $("#newsort_list .sort_deta.goods-active").attr('data-id');
+        $(this).addClass('sort-active').siblings().removeClass('sort-active');
+        if ($(".goods-box-bot ul li.sort-active i").hasClass("des")) {
+            goodsList(sort_num,opt_id);
+            $(this).find("span i").eq(0).removeClass("des");
+            $(this).find("span i").eq(1).addClass("asc");
+        } else {
+            goodsList(sort_num,opt_id);
+            $(this).find("span i").eq(1).removeClass("asc");
+            $(this).find("span i").eq(0).addClass("des");
+        }
+    })
+</script>
+<script id="sort_list" type="text/html">
+    {{each list as data}}
+    <div class='sort_deta'>{{data.opt_name}}</div>
+    {{/each}}
+</script>
+
+</html>

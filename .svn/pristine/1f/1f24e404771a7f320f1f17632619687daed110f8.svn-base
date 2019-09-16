@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <script src="../js/common.js"></script>
+    <title>消息中心</title>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="myprofile_about">
+        <ul>
+            <li class="myprofile_li" onclick=openwin_header_in("user_sys_ann","系统公告","user_sys_ann.html",{type:1},true)>
+                <i class="iconfont icon-gonggao1 uli_img flof"></i>
+                <div class="uli_tit flof">系统公告</div>
+                <i class="icon iconfont icon-more uli_jt flor"></i>
+            </li>
+            <li class="myprofile_li" onclick=openwin_header_in("user_sys_ann","佣金消息","user_sys_ann.html",{type:2},true)>
+                <i class="iconfont icon-gonggao uli_img flof"></i>
+                <div class="uli_tit flof">佣金消息</div>
+                <i class="icon iconfont icon-more uli_jt flor"></i>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

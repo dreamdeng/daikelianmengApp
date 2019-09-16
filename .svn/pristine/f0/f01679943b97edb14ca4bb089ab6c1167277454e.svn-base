@@ -1,0 +1,198 @@
+img {
+    width: 100%;
+}
+
+select {
+    outline: none;
+    border: none;
+    background: transparent;
+}
+
+html, body {
+    min-height: 100vh;
+    background: #f5f5f5;
+}
+
+.zc_page {
+    background: #fff;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.zc_logo {
+    width: 2.51rem;
+    height: 2.51rem;
+    margin: 1.6rem auto 0;
+}
+.ks_img img{
+  width: 100%;
+}
+.zc_form {
+    margin-top: 0.8rem;
+    overflow: hidden;
+    padding: 0 1.52rem;
+}
+
+.zc_info {
+    margin-bottom: 0.76rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.zc_title {
+    font-size: 0.36rem;
+    color: #f27435;
+    margin-bottom: 0.37rem;
+}
+
+.zc_input {
+    color: #999999;
+    font-size: 0.36rem;
+    margin-bottom: 0.37rem;
+}
+
+.zc_input input::-webkit-input-placeholder {
+    color: #999;
+}
+
+.zc_input input::-moz-placeholder {
+    color: #999;
+}
+
+.zc_input input::-ms-input-placeholder {
+    color: #999;
+}
+
+.zc_hq {
+    color: #fc9752;
+    font-size: 0.36rem;
+    /*margin-left: 0.55rem;*/
+}
+
+.zc_fg {
+    width: 1px;
+    height: 0.36rem;
+    background: #eaeaea;
+}
+
+.zc_deal {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 1.17rem;
+}
+
+.zc_agree {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 0.33rem;
+}
+
+.zc_checked {
+    width: 0.33rem;
+    height: 0.33rem;
+    border: 1px solid #f27435;
+    position: relative;
+    margin-right: 0.2rem;
+    background: #f27435;
+}
+
+.zc_checked > .icon-duigou4 {
+    font-size: 0.33rem;
+    color: #fff;
+    font-weight: bold;
+}
+.ks_btn{
+    width: 4.45rem;
+    height: 1.01rem;
+    line-height: 1.01rem;
+    text-align: center;
+    background: #f27435;
+    color: #fff;
+    margin: 0 auto;
+    font-size: 0.44rem;
+    border-radius: 1.01rem;
+}
+.kcnr_tab{
+    padding: 0 0.33rem;
+}
+.kcnr_ul{
+    position: fixed;
+    bottom: 0.24rem;
+    left: 0;
+    width: 100%;
+}
+.kcnr_table{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.kcnr_table>li{
+    width: 2.83rem;
+    height: 0.72rem;
+    text-align: center;
+    line-height: 0.72rem;
+    font-size: 0.36rem;
+    color: #333333;
+    border-radius: 0.13rem;
+}
+.kcnr_table>li.nr_active{
+    background: #f27435;
+    color: #fff;
+}
+.kenr_war{
+    display: none;
+    overflow: hidden;
+}
+.flof{
+    float: left;
+}
+.flor{
+    float: right;
+}
+a{
+    text-decoration:none;
+    color: #fc9752;
+}
+a:active{
+    text-decoration:none;
+}
+.deal_check{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+/*new*/
+.login_top{
+  width: 100%;
+  margin:0 auto;
+}
+.login_top img{
+  width: 100%;
+}
+.login_btn{
+  width: 100%;
+  margin:1.2rem auto 0;
+}
+.login_btn button{
+  width: 76%;
+  margin:0.2rem 12%;
+  height:1rem;
+  line-height: 1rem;
+  text-align: center;
+  border-radius: 0.2rem;
+  color: #fff;
+}
+.login_btn button.iphone{
+  background: #fc967e;
+}
+.login_btn button.wechat{
+  background: #4cd26f;
+}
+.login_btn button span{
+  font-size: 0.3rem;
+}

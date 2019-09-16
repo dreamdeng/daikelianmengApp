@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>基本信息</title>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="myprofile_about">
+        <div class="about_li">
+            <div class="ali_tit flof">头像</div>
+            <div class="ali_img flor"><img src="../image/tx.png" id="cimg"></div>
+        </div>
+        <div class="about_li">
+            <div class="ali_title">实名认证</div>
+        </div>
+        <div class="about_li" id="rnameclick">
+            <div class="ali_tit flof">真实姓名</div>
+            <div class="iconfont uli_jt flor" id="xm">&#xe6a7;</div>
+            <div class="ali_info flor" id="real_name"></div>
+        </div>
+        <div class="about_li" id="idclick">
+            <div class="ali_tit flof">身份证号</div>
+            <div class="iconfont uli_jt flor" id="sfz">&#xe6a7;</div>
+            <div class="ali_info flor" id="id_card"></div>
+        </div>
+        <div class="about_li">
+            <div class="ali_title">基本信息</div>
+        </div>
+        <div class="about_li">
+            <div class="ali_tit flof">身份</div>
+            <div class="iconfont uli_jt flor">&#xe6a7;</div>
+            <div class="ali_info flor">
+                <select id="degree">
+                    <option value="4">自主创业</option>
+                    <option value="3">学生族</option>
+                    <option value="2">上班族</option>
+                    <option value="1" selected>无业</option>
+                </select>
+            </div>
+        </div>
+        <div class="about_li">
+            <div class="ali_tit flof">信用卡</div>
+            <div class="iconfont uli_jt flor">&#xe6a7;</div>
+            <div class="ali_info flor">
+                <select id="is_credit">
+                    <option value="1">无</option>
+                    <option value="2">有</option>
+                </select>
+            </div>
+        </div>
+        <div class="about_li">
+            <div class="ali_title">代理信息</div>
+        </div>
+        <div class="about_li">
+            <div class="ali_tit flof">代理级别</div>
+            <div class="iconfont uli_jt flor" style="color: #fff">&#xe6a7;</div>
+            <div class="ali_info flor" id="level_name">游客</div>
+            <!--<span class="sj_btn flor">去升级</span>-->
+        </div>
+        <div class="about_li" id="invclick">
+            <div class="ali_tit flof">推荐人</div>
+            <div class="iconfont uli_jt flor" id="inv">&#xe6a7;</div>
+            <div class="ali_info flor" id="inviter"></div>
+        </div>
+        <div class="save_btn">
+            <div class="bc" onclick="submit()">保存</div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+  apiready = function () {
+    var token = localStorage.getItem("userToken");
+    var deviceId = api.deviceId;
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("userinfo"),
+      dataType: "JSON",
+      method: "POST",
+      data: {
+        token: token,
+        deviceid: deviceId
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          api.hideProgress();
+          showInfo(data.data);
+        } else {
+          btToast(data.msg, 2000);
+          setTimeout(function () {
+            api.closeWin();
+          }, 2000)
+        }
+      },
+      error: function () {
+        btToast("系统繁忙，请稍后再试", 2000);
+        setTimeout(function () {
+          api.closeWin();
+        }, 2000)
+      }
+    })
+  }
+  //是否实名
+  var certification = 0;
+  //是否有邀请人
+  var inviter = null;
+
+  //显示用户信息
+  function showInfo(user) {
+    // console.log(JSON.stringify(user));
+    $("#real_name").text(user.real_name);
+    $("#id_card").text(user.id_card);
+    if(user.cimg){
+      $("#cimg").attr("src",user.cimg);
+    }
+    if (certification || (user.real_nam != "" && user.id_card != "")) {
+      certification = 1;
+      $("#xm").css("color", "#FFF");
+      $("#sfz").css("color", "#FFF");
+    } else {
+      $("#rnameclick").on("click", function () {
+        popInput('真实姓名', 'real_name')
+      });
+      $("#idclick").on("click", function () {
+        popInput('身份证号', 'id_card', 'forbid')
+      });
+    }
+    if (user.level_name) {
+      $("#level_name").text(user.level_name);
+    }
+    if (user.inviter) {
+      $("#inviter").text(user.inviter);
+      inviter = user.inviter;
+      $("#inv").css("color", "#FFF");
+    } else {
+      $("#invclick").on('click', function () {
+        popInput('邀请码', 'inviter');
+      })
+    }
+    $("#is_credit").val(user.is_credit);
+    if (user.degree) {
+      $("#degree").val(user.degree);
+    } else {
+      $("#degree").val(1);
+    }
+  }
+
+
+  function submit() {
+    var rName = "";
+    var idCard = "";
+    var is_credit = $("#is_credit").val();
+    var invitNum = $("#inviter").text();
+    if (inviter) {
+      invitNum = "";
+    }
+    var degree = $("#degree").val();
+    if (!certification) {
+      rName = $("#real_name").text();
+      idCard = $("#id_card").text();
+      if((rName!="" && idCard=="") || (rName=="" && idCard!="")){
+        btToast("请完成实名认证填写", 2000);
+        return;
+      }
+    }
+    var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+    if (idCard != "" && reg.test(idCard) === false) {
+      btToast("请输入正确的身份证", 2000);
+      return;
+    }
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("save_user"),
+      method: "POST",
+      dataType: "json",
+      data: {
+        is_credit: is_credit,
+        inviter_code: invitNum,
+        real_name: rName,
+        id_card: idCard,
+        degree: degree,
+        token: localStorage.getItem("userToken"),
+        deviceid: api.deviceId
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          btToast("更新成功", 2000);
+          reload();
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+</script>
+</html>

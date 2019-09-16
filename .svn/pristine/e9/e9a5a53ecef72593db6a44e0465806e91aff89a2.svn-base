@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+
+    <title>订单列表</title>
+</head>
+
+<body>
+    <div class="myprofile_page">
+        <div class="partner_tab">
+            <div class="content_frist" id="new_order_list">
+                <div class="wra_frist tgr">
+                    <ul class="table_second" id="new_order">
+                        <li class="s_active" data-id='1'>今日</li>
+                        <li data-id='2'>昨日</li>
+                        <li data-id='3'>本月</li>
+                        <li data-id='4'>上月</li>
+                    </ul>
+                    <div class="content_second">
+                        <div class="wra_second s_active">
+                            <div class="myprofile_spread" id="order_list">
+                                <div class="myprofile_spread_deta" data-id="2">
+                                    <div class="spread_deta-top">
+                                        <h1><span class="iconfont icon-yonghu"></span>个人推广收益（包含待结算）</h1>
+                                        <div class="sort-prev iconfont icon-more"></div>
+                                    </div>
+                                    <div class="spread_deta-bot">
+                                        <div class="deta_bot_list">
+                                            <h1>{{personal_total}}</h1>
+                                            <p>个人推广（单）</p>
+                                        </div>
+                                        <div class="deta_bot_list">
+                                            <h1>{{personal_order}}</h1>
+                                            <p>团队推广收入（元）</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="myprofile_spread_deta" data-id="1">
+                                    <div class="spread_deta-top">
+                                        <h1><span class="iconfont icon-03"></span>团队推广收益（包含待结算）</h1>
+                                        <div class="sort-prev iconfont icon-more"></div>
+                                    </div>
+                                    <div class="spread_deta-bot">
+                                        <div class="deta_bot_list">
+                                            <h1>{{team_total}}</h1>
+                                            <p>个人推广（单）</p>
+                                        </div>
+                                        <div class="deta_bot_list">
+                                            <h1>{{team_order}}</h1>
+                                            <p>团队推广收入（元）</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="order_text">
+                                    <h1>结算说明：</h1>
+                                    <p> 1）“待结算“中包含未确认收货、已确认收货但拼多多尚未结算的订单佣金。</p>
+                                    <p> 2）每月21日结算本月每月15日及之前拼多多审核通过的待结算订单。</p>
+                                    <p> 3）任何一个订单发生退款/维权/退货行为，拼多多会将订单状态变更为审核失败，对应的待结算金额会减少。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    apiready = function() {
+        getNewOrderlist(1);
+    }
+
+    var vm = new Vue({
+        el: '#order_list',
+        data: {
+            personal_total: '',
+            personal_order: '',
+            team_total: '',
+            team_order: '',
+        }
+    });
+
+
+
+    // 订单列表
+    function getNewOrderlist(type) {
+        //type 1今天 2、昨天、3、本月  4，上月；
+
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("orders_info"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                token: token,
+                deviceid: deviceId,
+                type: type,
+            },
+            success: function(data) {
+                var item = data.data;
+                if (data.code == 0) {
+                    vm.personal_total = item.personal.total;
+                    vm.personal_order = item.personal.order_count;
+                    vm.team_total = item.team.total;
+                    vm.team_order = item.team.order_count;
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function() {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+
+
+
+    $(document).ready(function() {
+
+        $("#new_order li").click(function() {
+            $(this).siblings("li").removeClass("s_active");
+            $(this).addClass("s_active");
+            var f_index = $(this).attr('data-id');
+            getNewOrderlist(f_index);
+        });
+        var only_time = 1,
+            sort = 1;
+
+        $('.myprofile_spread_deta').click(function() {
+            only_time = $("#new_order li.s_active").attr('data-id');
+            sort = $(this).attr('data-id');
+            openWithCheckLogin("order_detail", "订单列表", "order_detail.html", {
+                type: only_time,
+                sort: sort
+            }, true)
+        })
+    })
+
+
+    function showProList(proList) {
+        var total = proList.total;
+        $("#shz").text(total.sh);
+        $("#ytg").text(total.tg);
+        $("#wtg").text(total.wtg);
+        $("#status_tag").show();
+        $("#tip").show();
+        $("#order_list").html(html);
+    }
+
+    function showPartnerList(part_lsit) {
+        $("#status_tag").hide();
+        $("#tip").hide();
+        $("#order_list").html(html);
+    }
+
+
+    // template.helper("dateFormat", function (date, format) {
+    //   var date = new Date(date);
+    //   return date.pattern(format);
+    // })
+</script>
+
+</html>

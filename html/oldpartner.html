@@ -1,0 +1,679 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>代客联盟</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/partner.css"/>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script src="../js/partner.js"></script>
+</head>
+
+<body>
+<div class="partner_page">
+    <div class="partner_tab">
+        <ul class="table_frist">
+            <li class="f_active" id="become">
+                <div class="zt"></div>
+                成为合伙人
+            </li>
+            <li onclick="yqyl()">
+                <div class="zt"></div>
+                邀请有礼
+            </li>
+        </ul>
+        <div class="content_frist">
+            <div class="wra_frist tgr f_active">
+                <ul class="table_second">
+                    <li class="s_active" id="levelUp">立即升级</li>
+                    <li onclick="gmxz()">购买须知</li>
+                </ul>
+                <div class="content_second" id="content1">
+                    <div class="wra_second s_active">
+                        <div class="fixed_btn">
+                            <ul class="table_third">
+                                <li data-level="2">
+                                    <span class="active_text">购买</span>体验官<span class="active_text">课程</span>
+                                </li>
+                                <li class="t_active" data-level="3">
+                                    <span class="active_text">购买</span>合伙人<span class="active_text">课程</span>
+                                </li>
+                                <li data-level="4">
+                                    <span class="active_text">购买</span>金牌合伙人<span class="active_text">课程</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="content_third">
+                            <div class="">
+                                <img src="" id="vipImg">
+                            </div>
+                        </div>
+                        <div class="foot_bar">
+                            <div class="cp_info flof">
+                                <div class="kc_price flof">价格：<span id="price">0</span>元</div>
+                                <div class="xy_deal flof">
+                                    <div class="xy_checked">
+                                        <span class="iconfont icon-duigou4"></span>
+                                        <input class="deal_check" type="checkbox" checked onclick="agree(this)">
+                                    </div>
+                                    <span style="text-align: center;"
+                                          onclick=openwin_header_in("document","代客联盟合伙人协议","document.html",{docId:10},true)>&nbsp;&nbsp;我已阅读并同意<br><a
+                                            href="javascript:;">《代客联盟合伙人协议》</a></span>
+                                </div>
+                            </div>
+                            <div class="flor">
+                                <div class="gm_btn" id="buy" onclick="buyNow()">立即购买</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wra_second">
+                        <div class="yh_main">
+                            <div class="yh_top">
+                                <div class="yh_info">
+                                    <div class="yh_icon">
+                                        <img src="../image/tx.png" id="gmxz_wxtx">
+                                    </div>
+                                    <div class="dklm">
+                                        <div class="dk_title" id="gmxz_wxName"></div>
+                                        <div class="dk_kf" id="gmxz_wxdesc"></div>
+                                    </div>
+                                </div>
+                                <div class="add_weixin" id="gmxz_wx">
+                                    <div class="weixin_icon">
+                                        <img src="../image/wx.png">
+                                    </div>
+                                    <div class="">添加微信</div>
+                                </div>
+                            </div>
+                            <div class="yh_bottom">
+                                <div class="xz_text" id="gmxz_content">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="wra_frist yqr">
+                <ul class="table_second">
+                    <li class="s_active" id="yqhaibao" onclick="spreadPoster();">邀请海报&专属链接</li>
+                    <li onclick="yqgz()">邀请规则</li>
+                </ul>
+                <div class="content_second" id="content2">
+                    <div class="wra_second s_active">
+                        <div class="content_third">
+                            <img src="" id="hb" data-url="">
+                        </div>
+                        <div class="foot_fx">
+                            <div class="fx_bar">
+                                <div class="fx_btn"><img src="../image/fxhb.png" onclick="sharePoster()"></div>
+                                <div class="fx_btn"><img src="../image/xzhb.png" onclick="saveImg()"></div>
+                                <div class="fx_btn"><img src="../image/fxlj.png" onclick="shareUrl()"></div>
+                                <div class="fx_btn"><img src="../image/fzlj.png" onclick="clipUrl()"></div>
+                            </div>
+                        </div>
+                        <div class="fx_tc">
+                            <div class="iconfont icon-success fx_icon"></div>
+                            <div class="fx_text">分享成功</div>
+                        </div>
+                    </div>
+                    <div class="wra_second">
+                        <div class="yh_main">
+                            <div class="yh_top">
+                                <div class="yh_info">
+                                    <div class="yh_icon">
+                                        <img src="../image/tx.png" id="yqgz_wxtx">
+                                    </div>
+                                    <div class="dklm">
+                                        <div class="dk_title" id="yqgz_wxname">微信</div>
+                                        <div class="dk_kf" id="yqgz_wxdesc"></div>
+                                    </div>
+                                </div>
+                                <div class="add_weixin">
+                                    <div class="weixin_icon">
+                                        <img src="../image/wx.png" id="yqgz_wx">
+                                    </div>
+                                    <div class="">添加微信</div>
+                                </div>
+                            </div>
+                            <div class="yh_bottom">
+                                <div class="xz_text" id="yqgz_content">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="gm_tc" style="display: none;" id="okPop">
+    <div class="tc_img"><img src="../image/zstyg.png" id="okImg"></div>
+    <div class="iconfont icon-chacha-1 close_tc"></div>
+</div>
+</body>
+<script type="text/javascript">
+  apiready = function () {
+    var level = api.pageParam.level;
+    if (!level) {
+      //非其他页面跳转,获取用户等级，决定是否可点击按钮
+      defaultSelect();
+    } else {
+      selectLevel_other(level);
+    }
+    // $("#partner_page").css("margin-top",api.safe)
+
+  }
+  var s_level = "";
+
+  function buyNow() {
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    if ($("#buy").hasClass("no_click")) {
+      return;
+    }
+    if (!token) {
+      api.showProgress({title: "", text: "", modal: true});
+      btToast("请先登录", 1000);
+      setTimeout(function () {
+        api.hideProgress();
+        openwin_header_in("register", "登录", "register.html", {}, true);
+      }, 1000);
+      return;
+    }
+
+    //发起支付
+    var price = parseFloat($("#price").text());
+    if (price <= 0) {
+      btToast("金额不正确", 2000);
+      return;
+    }
+    // console.log(s_level);
+    alipayParam(price, parseInt(s_level) - 1, token, deviceId);
+  }
+
+  //请求支付宝支付参数
+  function alipayParam(price, type, token, deviceId) {
+    //type 1 体验官 2 合伙人 3 金牌合伙人
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("alipay"),
+      method: "POST",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+        money: price,
+        type: type
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          alipay(data.data);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function (err) {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+  //发起支付 调用sdk
+  function alipay(param) {
+    api.showProgress({title: "", text: "", modal: true});
+    var aliPayPlus = api.require('aliPayPlus');
+    aliPayPlus.payOrder({
+      orderInfo: param
+    }, function (ret, err) {
+      if (ret.code == 9000) {
+        btToast("购买成功", 2000);
+        $("#okPop").show();
+        refreshXueyuan();
+      } else {
+        btToast("支付失败", 2000);
+      }
+      api.hideProgress();
+    })
+  }
+
+  function refreshXueyuan() {
+    //刷新学院页面
+    api.execScript({
+      name: 'root',
+      frameName: 'xueyuan',
+      script: 'reload()'
+    });
+  }
+
+
+  function gmxz() {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("office"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        id: 9
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var doc = data.data;
+          $("#gmxz_content").html(doc.content);
+          $("#gmxz_wx").unbind("click");
+          $("#gmxz_wx").on("click", function () {
+            clip(doc.wx_name, "是否打开微信？", "微信号已复制");
+          })
+          $("#gmxz_wxdesc").text(doc.wx_js);
+          $("#gmxz_wxName").text(doc.wx_nc);
+          $("#gmxz_wxtx").attr("src", doc.wx_img);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+  function selectLevel_other(level) {
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    if (token != "" && token!=null) {
+      //用户已经登录
+      api.showProgress({title: "", text: "", modal: true});
+      $.ajax({
+        url: server_url("resume"),
+        method: "POST",
+        dataType: "JSON",
+        data: {
+          token: token,
+          deviceid: deviceId
+        },
+        success: function (data) {
+          if (data.code == 0) {
+            var n = parseInt(data.data.userinfo.level);
+            $(".table_third li").each(function () {
+              if ($(this).data("level") <= n) {
+                $(this).addClass("no_click");
+                $(this).css("background", "#d2d2d2");
+              }
+            })
+          } else {
+            btToast(data.msg, 2000);
+          }
+          api.hideProgress();
+        },
+        error: function () {
+          neterr();
+        }
+      })
+    }
+
+    $(".table_frist li").removeClass("f_active");
+    $(".table_frist li").eq(0).addClass("f_active");
+    $(".wra_frist").eq(0).addClass("f_active");
+    $(".wra_frist").eq(1).removeClass("f_active");
+    $("#levelUp").addClass("s_active");
+    $("#levelUp").siblings().removeClass("s_active");
+    $(".wra_second").eq(0).addClass("s_active");
+    $(".wra_second").eq(1).removeClass("s_active");
+    $(".table_third li").each(function () {
+      if ($(this).data("level") == level) {
+        $(this).click();
+      }
+    })
+  }
+
+  //邀请规则
+  function yqgz() {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("office"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        id: 8
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var doc = data.data;
+          $("#yqgz_content").html(doc.content);
+          $("#yqgz_wx").unbind("click");
+          $("#yqgz_wx").on("click", function () {
+            clip(doc.wx_name, "是否打开微信？", "微信号已复制");
+          })
+          $("#yqgz_wxdesc").text(doc.wx_js);
+          $("#yqgz_wxname").text(doc.wx_nc);
+          $("#yqgz_wxtx").attr("src", doc.wx_img);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+
+  $(document).ready(function () {
+    $(".table_frist li").click(function () {
+      $(".table_frist li").removeClass("f_active");
+      $(this).addClass("f_active");
+      var f_index = $(this).index();
+      $(".content_frist .wra_frist").removeClass("f_active");
+      $(".content_frist .wra_frist").eq(f_index).addClass("f_active");
+
+    });
+    $(".table_second li").click(function () {
+      $(this).siblings("li").removeClass("s_active");
+      $(this).addClass("s_active");
+      var f_index = $(this).index();
+      $(this).parent(".table_second").next(".content_second").children(".wra_second").removeClass("s_active");
+      $(this).parent(".table_second").next(".content_second").children(".wra_second").eq(f_index).addClass("s_active");
+    });
+    $(".table_third li").click(function () {
+      //不可点击
+      if ($(this).hasClass("no_click")) {
+        return;
+      }
+      $(".table_third li").removeClass("t_active");
+      $(this).addClass("t_active");
+      var level = $(this).data("level");
+      selectVip(level);
+
+    });
+    $(".deal_check").click(function () {
+      if ($(this).prop('checked')) {
+        $(this).prev(".iconfont").addClass("icon-duigou4");
+      } else {
+        $(this).prev(".iconfont").removeClass("icon-duigou4");
+      }
+    });
+    $(".close_tc").click(function () {
+      $(this).parents(".gm_tc").hide();
+      reload();
+    });
+  })
+
+
+  //选择购买
+  function selectVip(level) {
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    if (!token) {
+      deviceId = "";
+      token = "";
+    }
+    api.showProgress({title: "", text: "", modal: true});
+    s_level = level;
+    var imgPath = "../image/zstyg.png";
+    if (s_level == 2) {
+      imgPath = "../image/zstyg.png";
+    } else if (s_level == 3) {
+      imgPath = "../image/zshhr.png";
+    } else if (s_level == 4) {
+      imgPath = "../image/jphhr.png";
+    }
+    $("#okImg").attr("src", imgPath);
+    $.ajax({
+      url: server_url("become"),
+      method: "POST",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+        type: level - 1
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var info = data.data;
+          $("#vipImg").attr("src", info.imgurl);
+          $("#price").text(info.price);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        neterr();
+      }
+    })
+  }
+
+  var canBuy = true;
+
+  function defaultSelect() {
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    if (!token) {
+      firstInto(0);
+    } else {
+      api.showProgress({title: "", text: "", modal: true});
+      $.ajax({
+        url: server_url("resume"),
+        method: "POST",
+        dataType: "JSON",
+        data: {
+          token: token,
+          deviceid: deviceId
+        },
+        success: function (data) {
+          if (data.code == 0) {
+            var level = parseInt(data.data.userinfo.level);
+            firstInto(level);
+          } else {
+            btToast(data.msg, 2000);
+          }
+          api.hideProgress();
+        },
+        error: function () {
+          neterr();
+        }
+      })
+    }
+  }
+
+
+  function firstInto(level) {
+    //用户等级
+    $(".table_third li").each(function () {
+      var le = $(this).data("level");
+      $(this).removeClass("t_active");
+      if (le <= level) {
+        $(this).addClass("no_click");
+        $(this).css("background", "#d2d2d2");
+      }
+      //比当前用户等级高一级
+      if (le == (level + 1)) {
+        $(this).click();
+      }
+      //金牌合伙人
+      if (level == 4) {
+        canBuy = false;
+        $("#vipImg").attr("src", "https://yanju001.oss-cn-beijing.aliyuncs.com/poster/20190403141925.jpg");
+        $("#buy").addClass("no_click");
+        $("#buy").css("background", "#d2d2d2");
+      }
+      //游客
+      if (level == 0 && le == 3) {
+        $(this).click();
+      }
+    })
+  }
+
+  function yqyl() {
+    if ($("#yqhaibao").hasClass("s_active")) {
+      spreadPoster();
+    }
+  }
+
+  var picName = new Date().getTime();
+
+  //预下载
+  function preDownImg(url) {
+    api.download({
+      url: url,
+      savePath: 'fs://test' + picName + '.jpeg',
+      report: false,
+      cache: false,
+      allowResume: true
+    }, function (ret, err) {
+    });
+  }
+
+  //推广海报
+  function spreadPoster() {
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    if (!token) {
+      deviceId = "";
+      token = "";
+    }
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("spread"),
+      method: "post",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var img = data.data.img;
+          var url = data.data.url;
+          preDownImg(data.data.img);
+          $("#hb").data("imgPath", img);
+          $("#hb").data("url", url);
+          //缓存海报
+          var path = localStorage.getItem("posterImgPath")
+          if (path) {
+            $("#hb").attr("src", path);
+          } else {
+            api.imageCache({
+              url: img,
+              thumbnail: false
+            }, function (ret, err) {
+              // var url = ret.url;
+              img = ret.url;
+              $("#hb").attr("src", img);
+              localStorage.setItem("posterImgPath", img);
+            });
+          }
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+  function agree(obj) {
+    var flag = $(obj).prop("checked");
+    if (!flag) {
+      $("#buy").addClass("no_click");
+      $("#buy").css("background", "#d2d2d2");
+    } else {
+      $("#buy").removeClass("no_click");
+      $("#buy").css("background", "#fc9752");
+    }
+  }
+
+  function sharePoster() {
+    var url = $("#hb").data("imgPath");
+    if (url != "") {
+      api.saveMediaToAlbum({
+        path: 'fs://test' + picName + '.jpeg',
+      }, function (ret1, err1) {
+        if (ret1 && ret1.status) {
+          api.confirm({
+            title: '是否打开微信？',
+            msg: '图片已保存',
+            buttons: ['取消', '确定']
+          }, function (ret, err) {
+            var index = ret.buttonIndex;
+            if (index == 2) {
+              window.location.href = 'weixin://'
+            }
+          });
+        } else {
+          btToast("图片保存失败", 2000);
+        }
+      });
+
+      // api.saveMediaToAlbum({
+      //   path: url
+      // }, function (ret, err) {
+      //   if (ret && ret.status) {
+      //     api.confirm({
+      //       title: '是否打开微信？',
+      //       msg: '图片已保存',
+      //       buttons: ['取消', '确定']
+      //     }, function (ret, err) {
+      //       var index = ret.buttonIndex;
+      //       if (index == 2) {
+      //         window.location.href = 'weixin://'
+      //       }
+      //     });
+      //   } else {
+      //     btToast("图片保存失败", 2000);
+      //   }
+      // });
+    }
+  }
+
+
+  function saveImg() {
+    api.saveMediaToAlbum({
+      path: 'fs://test' + picName + '.jpeg',
+    }, function (ret1, err1) {
+      if (ret1 && ret1.status) {
+        btToast("海报已保存", 2000);
+      } else {
+        btToast("海报保存失败", 2000);
+      }
+    });
+  }
+
+
+  function shareUrl() {
+    var url = $("#hb").data("url");
+    clip(url, "是否打开微信？", "链接已复制");
+  }
+
+  function clipUrl() {
+    var url = $("#hb").data("url");
+    var clipBoard = api.require('clipBoard');
+    clipBoard.set({
+      value: url
+    }, function (ret, err) {
+      if (ret) {
+        btToast("链接已复制", 2000);
+      }
+    });
+  }
+</script>
+
+</html>

@@ -1,0 +1,474 @@
+//服务器域名 测试
+var serverHost = "http://192.168.101.168:7090/";
+//服务器域名 正式s
+// var serverHost = "http://www.91fenji.com/";
+// 新测试
+// var newServerHost = "http://admin.com:7090/"
+//版本
+var version = 22;
+
+function weburl(url) {
+  var browser = api.require('webBrowser');
+  browser.open({
+    url: url,
+    titleBar: {
+      bg: '#111',
+      textColor: '#fff'
+    }
+  });
+}
+
+
+function server_url(path) {
+  return serverHost + path;
+}
+function new_server_url(path) {
+  return newServerHost + path;
+}
+function reloadPartner() {
+  api.execScript({
+    name: 'root',
+    frameName: 'partner',
+    script: 'reload();'
+  });
+}
+
+function reloadXueyuan() {
+  api.execScript({
+    name: 'root',
+    frameName: 'xueyuan',
+    script: 'reload();'
+  });
+}
+
+function openwin_header_in(wname, wtitle, curl, cparam, cboun) {
+  api.openWin({
+    name: wname,
+    url: "win_header_in.html",
+    bounces: false,
+    scrollEnabled: false,
+    slidBackType: 'edge',
+    softInputBarEnabled: false,
+    scrollToTop: true,
+    pageParam: {
+      "wname": wname,
+      "wtitle": wtitle,
+      "curl": curl,
+      "cparam": cparam,
+      "cboun": cboun
+    }
+  });
+}
+
+function openwin_header(wname, wtitle, curl, cparam, cboun) {
+  api.openWin({
+    name: wname,
+    url: "win_header.html",
+    bounces: false,
+    scrollEnabled: false,
+    slidBackType: 'edge',
+    softInputBarEnabled: false,
+    scrollToTop: true,
+    pageParam: {
+      "wname": wname,
+      "wtitle": wtitle,
+      "curl": curl,
+      "cparam": cparam,
+      "cboun": cboun
+    }
+  });
+}
+
+//带分享按钮的标题栏
+function openwin_header_share(wname, wtitle, curl, cparam, cboun) {
+  api.openWin({
+    name: wname,
+    url: "win_header_share.html",
+    bounces: false,
+    scrollEnabled: false,
+    slidBackType: 'edge',
+    softInputBarEnabled: false,
+    scrollToTop: true,
+    pageParam: {
+      "wname": wname,
+      "wtitle": wtitle,
+      "curl": curl,
+      "cparam": cparam,
+      "cboun": cboun
+    }
+  });
+}
+
+function reload() {
+  location.reload();
+}
+
+function neterr() {
+  var dialogBox = api.require('dialogBox');
+  dialogBox.close({
+    dialogName: 'discount'
+  });
+
+  dialogBox.discount({
+    rect: {
+      w: 240,
+      h: 160
+    },
+    styles: {
+      bg: 'rgba(255,255,255,0)',
+      corner: 0,
+      image: {
+        path: 'widget://image/neterr.png',
+        marginB: 240
+      },
+      cancel: {
+        icon: 'widget://image/reloadbtn.png',
+        marginB: 200,
+        w: 240,
+        h: 40
+      }
+    },
+    tapClose: false
+  }, function (ret) {
+    if (ret.eventType == 'cancel') {
+      dialogBox.close({
+        dialogName: 'discount'
+      });
+      reload();
+    }
+  });
+}
+
+//封装底部弹窗
+function btToast(msg, time) {
+  api.toast({
+    msg: msg,
+    duration: time,
+    location: 'bottom'
+  });
+}
+
+//eleID 输入框ID ; inputType  default（默认键盘）number（数字键盘）search（搜索键盘）secure（输入框为密码输入框）forbid（禁用输入中文）
+function popInput(title, eleID, inputType) {
+  var type = inputType;
+  if (!inputType) {
+    type = "default";
+  }
+  //弹出输入框
+  var dialogBox = api.require('dialogBox');
+  dialogBox.input({
+    keyboardType: type,
+    texts: {
+      title: title,
+      placeholder: '在这里输入信息',
+      leftBtnTitle: '取消',
+      rightBtnTitle: '确定'
+    },
+    styles: {
+      bg: '#fff',
+      corner: 8,
+      w: 340,
+      h: 180,
+      title: {
+        h: 30,
+        alignment: 'center',
+        size: 18,
+        color: '#000',
+        marginT: 8,
+      },
+      input: {
+        h: 50,
+        // y:30,
+        marginT: 40,
+        marginLeft: 10,
+        marginRight: 10,
+        textSize: 16,
+        textColor: '#000'
+      },
+      dividingLine: {
+        width: 0.5,
+        color: '#bfbfbf'
+      },
+      left: {
+        bg: 'rgba(0,0,0,0)',
+        color: '#007FFF',
+        size: 12
+      },
+      right: {
+        bg: 'rgba(0,0,0,0)',
+        color: '#007FFF',
+        size: 12
+      },
+    }
+  }, function (ret) {
+    if (ret.eventType == 'right') {
+      $("#" + eleID).text(ret.text.trim());
+    }
+    var dialogBox = api.require('dialogBox');
+    dialogBox.close({
+      dialogName: 'input'
+    });
+  });
+}
+
+//格式化日期
+Date.prototype.pattern = function (fmt) {
+  var o = {
+    "M+": this.getMonth() + 1, //月份
+    "d+": this.getDate(), //日
+    "h+": this.getHours() % 12 == 0 ? 12 : this.getHours() % 12, //小时
+    "H+": this.getHours(), //小时
+    "m+": this.getMinutes(), //分
+    "s+": this.getSeconds(), //秒
+    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+    "S": this.getMilliseconds() //毫秒
+  };
+  var week = {
+    "0": "/u65e5",
+    "1": "/u4e00",
+    "2": "/u4e8c",
+    "3": "/u4e09",
+    "4": "/u56db",
+    "5": "/u4e94",
+    "6": "/u516d"
+  };
+  if (/(y+)/.test(fmt)) {
+    fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+  }
+  if (/(E+)/.test(fmt)) {
+    fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? "/u661f/u671f" : "/u5468") : "") + week[this.getDay() + ""]);
+  }
+  for (var k in o) {
+    if (new RegExp("(" + k + ")").test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    }
+  }
+  return fmt;
+}
+
+
+//封装confirm弹窗
+function popConfirm(title, content, cencel, confirm, callback) {
+  var dialogBox = api.require('dialogBox');
+  dialogBox.alert({
+    texts: {
+      title: title,
+      content: content,
+      leftBtnTitle: cencel,
+      rightBtnTitle: confirm
+    },
+    styles: {
+      bg: '#fff',
+      w: 300,
+      corner: 2,
+      title: {                //（可选项）JSON对象；弹窗标题栏样式配置，不传则不显示标题区域
+        marginT: 0,       //（可选项）数字类型；标题栏与对话框顶端间距；默认：20
+      },
+      content: {
+        color: '#000',
+        size: 14
+      },
+      left: {
+        marginB: 7,
+        marginL: 20,
+        w: 130,
+        h: 35,
+        corner: 2,
+        bg: '#ffffff',
+        size: 12
+      },
+      right: {
+        marginB: 7,
+        marginL: 10,
+        w: 130,
+        h: 35,
+        corner: 2,
+        bg: '#ffffff',
+        size: 12
+      }
+    }
+  }, function (ret) {
+    var dialogBox = api.require('dialogBox');
+    if (ret.eventType == 'right') {
+      callback();
+    }
+    dialogBox.close({
+      dialogName: 'alert'
+    });
+  });
+}
+
+//登出时清除缓存数据
+function clearLocalStorage() {
+  localStorage.removeItem("userToken");
+  localStorage.removeItem("aliAccount");
+  localStorage.removeItem("curUserID");
+  localStorage.removeItem("user_phone");
+  localStorage.removeItem("posterImgPath");
+  localStorage.removeItem("proShareImg");
+}
+
+
+//test
+function dd(obj) {
+  console.log(JSON.stringify(obj));
+}
+
+function clip(value, title, msg) {
+  var clipBoard = api.require('clipBoard');
+  clipBoard.set({
+    value: value
+  }, function (ret, err) {
+    if (ret) {
+      api.confirm({
+        title: title,
+        msg: msg,
+        buttons: ['取消', '确定']
+      }, function (ret, err) {
+        var index = ret.buttonIndex;
+        if (index == 2) {
+          window.location.href = 'weixin://'
+        }
+      });
+    }
+  });
+}
+
+//部分跳转检测是否登录，没有登录则弹出登录页面
+function openWithCheckLogin(wname, wtitle, curl, cparam, cboun) {
+  var token = localStorage.getItem("userToken");
+  if (!token) {
+    api.showProgress({title: "", text: "", modal: true});
+    //没有token 未登录状态
+    btToast("请先登录", 1000);
+    setTimeout(function () {
+      api.hideProgress();
+      openwin_header_in("register", "登录", "register.html", cparam, cboun);
+    }, 1000)
+  } else {
+    openwin_header_in(wname, wtitle, curl, cparam, cboun);
+  }
+}
+
+function version_control(rs) {
+  var andUrl = rs.android;
+  var iosUrl = rs.ios;
+  api.confirm({
+    msg: "版本更新",
+    buttons: ['下次再说', '立即更新']
+  }, function (ret, err) {
+    var index = ret.buttonIndex;
+    if (index == 2) {
+      if (api.systemType == "ios") {
+        iosver(iosUrl);
+      } else if (api.systemType == "android") {
+        andver(andUrl);
+      }
+    } else {
+      localStorage.setItem("updateFlag", 1);
+    }
+  });
+}
+
+
+function iosver(url) {
+  api.openFrame({
+    name: 'iosver',
+    url: url,
+    bgColor: '#495C96',
+    rect: {
+      x: 0,
+      y: 0,
+      w: 'auto',
+      h: api.winHeight
+    }
+  });
+}
+
+function andver(url) {
+  api.openFrame({
+    name: 'andver',
+    url: 'ver.html',
+    bgColor: '#495C96',
+    rect: {
+      x: 0,
+      y: 0,
+      w: 'auto',
+      h: api.winHeight
+    },
+    pageParam: {
+      url: url
+    }
+  });
+}
+
+
+function addPushinfo() {
+  var tencentPush = api.require('tencentPush');
+// 需要绑定的账号，若为"*"表示解除之前的账号绑定
+  var params = {account: api.deviceId};
+  tencentPush.registerPush(params, resultCallback);
+}
+
+var resultCallback = function (ret, err) {
+  // console.log(api.deviceId);
+  if (ret.status) {
+    var token = localStorage.getItem("userToken");
+    var deviceId = api.deviceId;
+    if(token!=""){
+      //用户已登录
+      $.ajax({
+        url:server_url("stoken"),
+        method:"POST",
+        data:{
+          deviceid:deviceId,
+          token:token,
+          stoken:ret.token
+        },
+        dataType:"json",
+        success:function (data) {
+        },
+        error:function (err) {
+        }
+      })
+    }
+  } else {
+  }
+};
+
+function addMessageListener(){
+  // 注册消息透传（消息命令字）的接收回调
+  var tencentPush = api.require('tencentPush');
+  var resultCallback = function(ret, err) {
+    console.log("收到透传消息，title：" + ret.title + "，content：" + ret.content +
+      "，customContent：" + ret.customContent);
+  };
+  var params = { name: "message" };
+  tencentPush.setListener(params, resultCallback);
+}
+
+
+//带跳过按钮的标题栏
+function openwin_header_ignore(wname, wtitle, curl, cparam, cboun) {
+  api.openWin({
+    name: wname,
+    url: "win_header_ignore.html",
+    bounces: false,
+    scrollEnabled: false,
+    slidBackType: 'edge',
+    softInputBarEnabled: false,
+    scrollToTop: true,
+    pageParam: {
+      "wname": wname,
+      "wtitle": wtitle,
+      "curl": curl,
+      "cparam": cparam,
+      "cboun": cboun
+    }
+  });
+}
+
+//唤起邀请码填写页面
+function openInviteCodePage(){
+  openwin_header_ignore("user_invteCode","邀请码","user_invteCode.html",{},true)
+}

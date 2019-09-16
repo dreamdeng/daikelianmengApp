@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/partner.css">
+    <script src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+
+    <title></title>
+</head>
+
+<body>
+    <div class="tg_page">
+        <div class="fxhb" style="position: relative;">
+
+
+        </div>
+    </div>
+</body>
+<script type="application/javascript">
+    var goods_id = "";
+    apiready = function() {
+        goods_id = api.pageParam.goods_id;
+        goods_url(goods_id);
+    }
+
+    var vm = new Vue({
+        el: '#invite_code',
+        data: {
+            invite_code: '',
+        }
+    });
+
+    function goods_url(goods_id) {
+        var token = localStorage.getItem("userToken");
+        var deviceId = localStorage.getItem("deviceId");
+        $.ajax({
+            url: server_url("share"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                goods_id: goods_id,
+                deviceid: deviceId,
+                token: token,
+                is_short: true
+            },
+            success: function(data) {
+                if (data.code == 0) {
+                  weburl(data.data.short_url)
+                }else{
+                  api.hideProgress();
+                  btToast("系统繁忙，请稍后再试", 2000);
+                }
+            },
+            error: function(err) {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+</script>
+
+</html>

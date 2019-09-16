@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <script src="../js/common.js"></script>
+    <title>用户收入</title>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="myprofile_about">
+        <ul>
+            <li class="myprofile_li" onclick=openwin_header("user_spread_income","推广产品收益","user_spread_income.html",{},true)>
+                <i class="iconfont icon-xiangao3 uli_img flof"></i>
+                <div class="uli_tit flof">推广产品收益</div>
+                <i class="icon iconfont icon-more uli_jt flor"></i>
+            </li>
+            <li class="myprofile_li" onclick=openwin_header("user_invite_income","邀请合伙人收益","user_invite_income.html",{},true)>
+                <i class="iconfont icon-xiangao2 uli_img flof"></i>
+                <div class="uli_tit flof">邀请合伙人收益</div>
+                <i class="icon iconfont icon-more uli_jt flor"></i>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

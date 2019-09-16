@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/partner.css">
+    <script src="../js/common.js"></script>
+    <title></title>
+</head>
+<body>
+<div class="tg_page">
+    <div class="fxhb" style="position: relative;">
+        <img src="" id="poster">
+        <!--<div style="position: absolute;bottom: 1.93rem;width: 9.07rem;height: 3.07rem;border-radius: 0.4rem;background: rgba(0,0,0,0.2);margin-left: -4.53rem;left: 50%;display: flex;justify-content: space-between;align-items: center;">-->
+        <!--<div style="width: 2.51rem;height: 2.51rem;margin-left: 0.85rem;">-->
+        <!--<img src="../image/cp_img.png">-->
+        <!--</div>-->
+        <!--<div style="font-size: 0.56rem;color: #fff;width: 50%;margin-right: 0.61rem;">-->
+        <!--<div style="text-align: left;">扫码立即下载</div>-->
+        <!--<div style="text-align: right;">贷款先人一步</div>-->
+        <!--</div>-->
+        <!--</div>-->
+    </div>
+    <div class="foot_fx">
+        <div class="fx_bar">
+            <div class="fx_btn"><img src="../image/fxhb.png" onclick="sharePoster()"></div>
+            <div class="fx_btn"><img src="../image/xzhb.png" onclick="saveImg()"></div>
+            <div class="fx_btn"><img src="../image/fxlj.png" onclick="shareUrl()"></div>
+            <div class="fx_btn"><img src="../image/fzlj.png" onclick="clipUrl()"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+  var url = "";
+  apiready = function () {
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    api.showProgress({title: "", text: "请稍候", modal: true});
+    $.ajax({
+      url: server_url("spread"),
+      method: "POST",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          $("#poster").data("imgPath", data.data.img);
+          //预下载图片
+          preDownImg(data.data.img);
+          var path = localStorage.getItem("posterImgPath")
+          if (path) {
+            $("#poster").attr("src", path);
+          } else {
+            api.imageCache({
+              url: data.data.img,
+              thumbnail: false
+            }, function (ret, err) {
+              var url = ret.url;
+              $("#poster").attr("src", url);
+              localStorage.setItem("posterImgPath", url);
+            });
+          }
+          url = data.data.url;
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function (data) {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+  var picName3 = new Date().getTime();
+
+  //预下载
+  function preDownImg(url) {
+    api.download({
+      url: url,
+      savePath: 'fs://test' + picName3 + '.jpeg',
+      report: false,
+      cache: false,
+      allowResume: true
+    }, function (ret, err) {
+    });
+  }
+
+  function sharePoster() {
+    var url = $("#poster").data("imgPath");
+    if (url != "") {
+      api.saveMediaToAlbum({
+        path: 'fs://test' + picName3 + '.jpeg',
+      }, function (ret1, err1) {
+        if(ret1 && ret1.status){
+          api.confirm({
+            title: '是否打开微信？',
+            msg: '图片已保存',
+            buttons: ['取消', '确定']
+          }, function (ret, err) {
+            var index = ret.buttonIndex;
+            if (index == 2) {
+              window.location.href = 'weixin://'
+            }
+          });
+        }else{
+          btToast("图片保存失败", 2000);
+        }
+      });
+    }
+  }
+
+  function saveImg() {
+    api.saveMediaToAlbum({
+      path: 'fs://test' + picName3 + '.jpeg',
+    }, function (ret1, err1) {
+      if(ret1 && ret1.status){
+        btToast("海报已保存", 2000);
+      }else{
+        btToast("海报保存失败", 2000);
+      }
+    });
+  }
+
+
+  function shareUrl() {
+    clip(url, "是否打开微信？", "链接已复制");
+  }
+
+  function clipUrl() {
+    var clipBoard = api.require('clipBoard');
+    clipBoard.set({
+      value: url
+    }, function (ret, err) {
+      if (ret) {
+        btToast("链接已复制", 2000);
+      }
+    });
+  }
+</script>
+</html>

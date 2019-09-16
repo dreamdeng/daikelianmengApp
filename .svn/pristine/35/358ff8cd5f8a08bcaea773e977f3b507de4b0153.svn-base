@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/partner.css">
+    <script src="../js/common.js"></script>
+    <title></title>
+</head>
+
+<body>
+    <div>进度条</div>
+    <div class="tg_page">
+        <div class="foot_fx">
+            <div class="fx_bar">
+                <div class="fx_btn"><img src="../image/fxhb.png" onclick="shareTest()">aaaaaa</div>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script type="application/javascript">
+    // 测试
+    function shareTest() {
+        var wx = api.require('wx');
+        wx.isInstalled(function(ret, err) {
+            if (ret.installed) {
+                wx.shareWebpage({
+                    apiKey: 'wx2bcb6c8899b5b2a2',
+                    title: '代客联盟',
+                    description: '课程付费APP，帮助用户更好地获取知识',
+                    scene: 'timeline',
+                    thumb: 'widget://a.jpg',
+                    contentUrl: 'https://www.baidu.com'
+                }, function(ret, err) {});
+            } else {
+                alert('当前设备未安装微信客户端');
+            }
+        });
+
+
+    }
+</script>
+
+</html>

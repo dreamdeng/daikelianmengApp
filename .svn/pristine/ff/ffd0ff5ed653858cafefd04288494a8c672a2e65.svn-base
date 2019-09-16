@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>注册</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="../css/register.css" />
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <!--<script type="text/javascript" src="../js/mvalidate.js"></script>-->
+</head>
+<style>
+    body {
+        background: #fff;
+    }
+</style>
+
+<body>
+    <div class="login_box">
+        <div class="login_top"><img src="../image/reg_bg.png" alt=""></div>
+        <div class="login_btn">
+            <button class="iphone">
+        手机登录
+      </button>
+            <button class="wechat">
+        <span class="iconfont icon-weixin"></span> 微信登录
+      </button>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    var wx;
+    apiready = function() {
+        wx = api.require('wx');
+    }
+    $(".iphone").click(function() {
+        openwin_header("register_new", "登录", "register_new.html", {}, true);
+    })
+
+    $(".wechat").click(function() {
+            wx.isInstalled(function(ret, err) {
+                if (ret.installed) {
+                    wx.auth({
+                        apiKey: 'wx2bcb6c8899b5b2a2'
+                    }, function(ret, err) {
+                        dd(ret)
+                        if (ret.status) {
+                            var code = ret.code;
+                            wx.getToken({
+                                apiKey: 'wx2bcb6c8899b5b2a2',
+                                apiSecret: '',
+                                code: code
+                            }, function(ret, err) {
+                                if (ret.status) {
+                                    var accessToken = ret.accessToken;
+                                    var openId = ret.openId;
+                                    localStorage.setItem("openid", ret.openId);
+                                    wx.getUserInfo({
+                                        accessToken: accessToken,
+                                        openId: openId
+                                    }, function(ret, err) {
+                                        if (ret.status) {
+                                            localStorage.setItem("nickname", ret.nickname);
+                                            localStorage.setItem("wx_img", ret.headimgurl);
+                                            $.ajax({
+                                                url: server_url("is_login"),
+                                                method: "POST",
+                                                dataType: "JSON",
+                                                data: {
+                                                    openid: openId
+                                                },
+                                                success: function(data) {
+                                                  dd(data)
+                                                  localStorage.setItem("userToken", data.data.token);
+                                                  localStorage.setItem("deviceid", data.data.deviceid);
+                                                  localStorage.setItem("user_phone", data.data.mobile);
+
+                                                    if (data.data == "") {
+                                                        openwin_header("register_new", "登录", "register_new.html", {
+                                                            "is_login": 1
+                                                        }, true);
+                                                    } else if (data.data.inviter_id == 0) {
+                                                        openInviteCodePage();
+                                                    } else {
+                                                        setTimeout(function() {
+                                                            api.openWin({
+                                                                name: 'main',
+                                                                url: './main.html',
+                                                            });
+                                                        }, 1000)
+                                                    }
+                                                    api.hideProgress();
+                                                },
+                                                error: function(err) {
+                                                    api.hideProgress();
+                                                    btToast("系统繁忙，请稍后再试", 2000);
+                                                }
+                                            })
+                                        } else {
+                                            btToast("登录失败", 2000);
+                                        }
+                                    });
+                                } else {
+                                    btToast("登录失败", 2000);
+                                }
+                            });
+                        } else {
+                            btToast("系统繁忙，请稍后再试...", 2000);
+                        }
+                    });
+                } else {
+                    btToast("当前设备未安装微信客户端", 2000);
+                }
+            });
+
+        })
+        //登录后的跳转
+    function loginCallback(data) {
+        if (data.exec_fun) {
+            if (data.exec_fra) {
+                api.execScript({
+                    name: data.exec_win,
+                    frameName: data.exec_fra,
+                    script: data.exec_fun
+                });
+            } else {
+                api.execScript({
+                    name: data.exec_win,
+                    script: data.exec_fun
+                });
+            }
+        } else {
+            api.execScript({
+                name: 'root',
+                frameName: 'user',
+                script: 'reload()'
+            });
+        }
+        api.closeWin();
+    }
+</script>
+
+</html>

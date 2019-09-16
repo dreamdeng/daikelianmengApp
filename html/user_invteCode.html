@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <!--<link rel="stylesheet" type="text/css" href="../css/partner.css">-->
+    <script src="../js/common.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/inviteCode.css">
+    <title></title>
+</head>
+<body>
+<div class="content">
+    <div style="width: 100%">
+        <img style="position:absolute;" src="https://yanju001.oss-cn-beijing.aliyuncs.com/dklm/yqmBg.jpg" width="100%">
+        <div class="inputs">
+            <div class="code">
+                <input type="text" placeholder="请输入邀请人的邀请码（必填）" id="inviteCode">
+            </div>
+            <div class="submitCode">
+                <input type="button" value="马上提交" id="subBtn" onclick="submitInviteCode()">
+            </div>
+        </div>
+
+        <div class="bottomContent">
+            <div style="margin-bottom: 0.3rem;">温馨提示 :</div>
+            <div class="tips" id="tipContent">
+                <p>1、您如果没有收到朋友的邀请码，请填写官方邀请码：88888888</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+  apiready = function () {
+    // getTips();
+  }
+  var defautTip = "<p>1、您在注册完成后三个自然日内仍可以在基本信息的推荐人当中填写邀请码；</p><p><br></p><p>2、当您学习体验官及更高等级的课程之后不能填写邀请码；</p><p><br></p><p>3、当您邀请过其他朋友加入代客联盟后不能再填写邀请码；</p>";
+
+  function getTips() {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("office"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        id: 31
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var doc = data.data.content;
+          $("#tipContent").html(doc);
+        } else {
+          $("#tipContent").html(defautTip);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        $("#tipContent").html(defautTip);
+      }
+    })
+  }
+
+
+  function submitInviteCode() {
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    var code = $("#inviteCode").val().trim();
+    if (code == "") {
+      btToast("请填写邀请码", 2000);
+      return;
+    }
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("fillcode"),
+      method: "POST",
+      dataType: "JSON",
+      data: {
+        inviter_code: code,
+        token: token,
+        deviceid: deviceId
+      },
+      success: function (data) {
+        dd(data)
+        if (data.code == 0) {
+            btToast("填写成功",2000);
+            setTimeout(function () {
+              // api.closeWin();
+              // openwin_header_in("index","","xueyuan.html",{is_first:1},true)
+              api.openWin({
+                  name: 'xueyuan',
+                  url: './xueyuan.html',
+                  pageParam: {
+                      is_first: 1
+                  }
+              });
+            },2000)
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+</script>
+</html>

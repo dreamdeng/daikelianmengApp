@@ -1,0 +1,40 @@
+.inputs {
+    position: absolute;
+    top: 8rem;
+    left: 1.9rem;
+}
+
+.code > input {
+    text-align: center;
+    font-size: 0.35rem;
+    border-radius: 1.5rem;
+    height: 1.1rem;
+    width: 5.8rem;
+    padding: 0 0.3rem;
+}
+
+.submitCode {
+    margin-top: 0.7rem;
+}
+
+.submitCode > input {
+    border: none;
+    font-size: 0.45rem;
+    border-radius: 1.5rem;
+    height: 1.1rem;
+    width: 6.4rem;
+    color: #FFF;
+    background: #fcd551 linear-gradient(to right, rgba(252, 212, 81, 0), rgba(242, 178, 53, 0.5));
+}
+
+.bottomContent {
+    color: #FFF;
+    position: absolute;
+    left: 1rem;
+    top: 11.4rem;
+    font-size: 0.35rem;
+}
+
+.tips {
+    width: 85%;
+}

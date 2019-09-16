@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <script src="../js/common.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <title>消息</title>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="system_news" id="list">
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+  var token = localStorage.getItem("userToken");
+  var deviceId = localStorage.getItem("deviceId");
+
+  apiready = function () {
+    var type = api.pageParam.type;
+    getMessage(type);
+  }
+
+  function getMessage(type) {
+    //1系统消息， 2佣金消息
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("hint"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+        type: type
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var list = data.data;
+          var html = "";
+          for (var n in list) {
+            html += ' <div class="new_list">' +
+              '<div class="new_time">' + list[n].addtime + '</div>' +
+              '<div class="new_text">' + list[n].content + '</div></div>';
+          }
+          $("#list").html(html);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+</script>
+</html>

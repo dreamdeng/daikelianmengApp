@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>提现明细</title>
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/template.js"></script>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="myprofile_detail">
+        <div class="tab-wrapper">
+            <ul class="tab-menu">
+                <li class="active">全部</li>
+                <li>
+                    <div class="zt zts"></div>
+                    提现通过
+                </li>
+                <li>
+                    <div class="zt ztd"></div>
+                    提现中
+                </li>
+                <li>
+                    <div class="zt ztw"></div>
+                    已驳回
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="detail_list">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="application/javascript">
+  var token = localStorage.getItem("userToken");
+  var deviceId = localStorage.getItem("deviceId");
+  //上一次点击的标签下标
+  var lastIndex = "";
+  //上一次点击的页数
+  var lastPage = "";
+  apiready = function () {
+    api.setRefreshHeaderInfo({
+      loadingImg: 'widget://image/ref.png',
+      bgColor: '#ccc',
+      textColor: '#ffffff',
+      textDown: '下拉刷新',
+      textUp: '松开刷新'
+    }, function (ret, err) {
+      setTimeout(function () {
+        api.refreshHeaderLoadDone();
+        reload();
+      }, 500);
+    });
+    getWithdrawlistInfo("", 0, 1);
+    bindF()
+  }
+
+  function getWithdrawlistInfo(status, index, page) {
+    if (lastIndex == index && lastPage == page) {
+      return;
+    }
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("withdrawlist"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+        status: status,
+        page_int: page
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          if (lastIndex != index) {
+            $("#detail_list").html("");
+          }
+          var html = template('cash_detail_list', {list: data.data});
+          $("#detail_list").append(html);
+          lastIndex = index;
+          lastPage = page;
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+  //绑定上方滑动点击事件
+  function bindF() {
+    var wrapper = $('.tab-wrapper'),
+      tabMenu = wrapper.find('.tab-menu li'),
+      line = $('<div class="line"></div>').appendTo(tabMenu);
+    tabMenu.filter(':first-of-type').find(':first').width('100%')
+
+    tabMenu.each(function (i) {
+      $(this).attr('data-tab', i);
+    });
+    tabMenu.on('click', function () {
+      var index = $(this).data('tab');
+      if (index == 1) {
+        getWithdrawlistInfo(2, index, 1);
+      } else if (index == 2) {
+        getWithdrawlistInfo(1, index, 1);
+      } else if (index == 3) {
+        getWithdrawlistInfo(3, index, 1);
+      } else {
+        getWithdrawlistInfo("", index, 1);
+      }
+      var getWrapper = $(this).closest(wrapper);
+      getWrapper.find(tabMenu).removeClass('active');
+      $(this).addClass('active');
+      getWrapper.find('.line').width(0);
+      $(this).find(line).animate({'width': '100%'}, 'fast');
+    });
+  }
+
+  template.helper("dateFormat", function (date, format) {
+    var date = new Date(date);
+    return date.pattern(format);
+  })
+</script>
+
+
+<script type="text/html" id="cash_detail_list">
+    {{each list as data}}
+    {{ if data.status==1 }}
+    <div class="order_list cash_in ">
+        <div class="order_info">
+            <div class="order_txt">订单编号：<span>{{data.orders}}</span></div>
+            <div class="order_txt">提现时间：<span
+                    class="order_time">{{data.addtime | dateFormat:'yyyy/MM/dd'}}</span>提现金额：<span>{{data.money}}</span>
+            </div>
+            <div class="order_txt">状态：<span class="order_zt">{{data.status_name}}</span></div>
+        </div>
+    </div>
+    {{else if data.status==2 }}
+    <div class="order_list withdrawals ">
+        <div class="order_info">
+            <div class="order_txt">订单编号：<span>{{data.orders}}</span></div>
+            <div class="order_txt">提现时间：<span
+                    class="order_time">{{data.addtime | dateFormat:'yyyy/MM/dd'}}</span>提现金额：<span>{{data.money}}</span>
+            </div>
+            <div class="order_txt">状态：<span class="order_zt">{{data.status_name}}</span><span class="reason">(如未到账请等待支付宝打款)</span>
+            </div>
+        </div>
+    </div>
+    {{else}}
+    <div class="order_list rejected ">
+        <div class="order_info">
+            <div class="order_txt">订单编号：<span>{{data.orders}}</span></div>
+            <div class="order_txt">提现时间：<span
+                    class="order_time">{{data.addtime | dateFormat:'yyyy/MM/dd'}}</span>提现金额：<span>{{data.money}}</span>
+            </div>
+            <div class="order_txt">状态：<span class="order_zt">{{data.status_name}}</span><span
+                    class="reason">{{data.remark}}</span></div>
+        </div>
+    </div>
+    {{/if}}
+    {{/each}}
+</script>
+</body>
+</html>

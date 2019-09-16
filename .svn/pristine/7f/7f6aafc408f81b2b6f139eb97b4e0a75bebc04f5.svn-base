@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <link rel="stylesheet" type="text/css" href="../css/common.css">
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/swiper.min.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+
+    <title>代客圈</title>
+</head>
+
+<body>
+    <div class="myprofile_page">
+        <h1 class='title_top'>代客圈</h1>
+        <div class="partner_tab ">
+            <ul class="table_frist sort_list" id="data_time">
+                <li data-id="1" class="f_active">今日爆款</li>
+                <li data-id="2">营销发圈</li>
+            </ul>
+        </div>
+        <div class="spread_box" id="order_text">
+            <div class="spread_lists" v-for='site in  sites'>
+                <div class="list_left"><img src="../image/tx.png"></div>
+                <div class="list_right">
+                    <div class="list_right_top">
+                        <h1>代客选</h1>
+                        <h4>{{site.addtime}}</h4>
+                    </div>
+                    <div class="list_right_cen">
+                        <p>{{site.title}}</p>
+                    </div>
+                    <div class="list_right_bot">
+                        <div class="right_bot_img"><img :src="site.img" alt=""></div>
+                        <div class="right_bot_tex" :data-id='site.goods_id'>
+                            <div class="bot_tex_le">
+                                <h1><span class="iconfont icon-fenxiang"></span>分享赚<span>{{site.price}}</span>元</h1>
+                            </div>
+                            <div class="bot_tex_rig">一键分享</div>
+                        </div>
+                        <div class="poster_img_src" style="display:none"><a :href="site.poster_img"></a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="share_box">
+            <div class="share_tips"></div>
+            <div class="share_list">
+                <div class="goods_share_btn" id="session" data-id="1">
+                    <span><img src="../image/icon_03.png" alt=""></span>
+                    <p>微信好友</p>
+                </div>
+                <div class="goods_share_btn" id="timeline" data-id="2">
+                    <span><img src="../image/icon_05.png" alt=""></span>
+                    <p>微信朋友圈</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <img src="" alt="" class="testimg">
+</body>
+<script>
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    apiready = function() {
+        spread_hot();
+
+        //设置下拉刷新
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/ref.png',
+            bgColor: '#ccc',
+            textColor: '#ffffff',
+            textDown: '下拉刷新',
+            textUp: '松开刷新'
+        }, function(ret, err) {
+            setTimeout(function() {
+                api.refreshHeaderLoadDone();
+                reload();
+                // checkLogin();
+            }, 500);
+        });
+    }
+
+
+    var vm = new Vue({
+        el: '#order_text',
+        data: {
+            sites: [{
+                addtime: '',
+                title: '',
+                poster_img: '',
+                goods_id: '',
+                img: '',
+                price: '',
+                num: '',
+                poster_img:''
+            }]
+        }
+    });
+    // 今日爆款
+    function spread_hot() {
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("commend"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                token: token,
+                deviceid: deviceId,
+            },
+            success: function(data) {
+                var item = data.data;
+                vm.sites = item;
+                if (data.code == 0) {
+                    vm.addtime = item.addtime;
+                    vm.img = item.img;
+                    vm.goods_id = item.goods_id;
+                    vm.title = item.title;
+                    vm.poster_img = item.poster_img;
+                    if (data.data.level == 4) {
+                        vm.price = item.price_t;
+                    } else if (data.data.level == 1) {
+                        vm.price = item.price;
+                    }
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function() {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+    // 营销发圈
+    function spread_quan() {
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("Marketing"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                token: token,
+                deviceid: deviceId,
+            },
+            success: function(data) {
+                var item = data.data;
+                vm.sites = item;
+                if (data.code == 0) {
+                    vm.addtime = item.addtime;
+                    vm.img = item.img;
+                    vm.goods_id = item.goods_id;
+                    vm.title = item.title;
+                    vm.poster_img = item.poster_img;
+                    if (data.data.level == 4) {
+                        vm.price = item.price_t;
+                    } else if (data.data.level == 1) {
+                        vm.price = item.price;
+                    }
+
+                    for (var i = 0; i < item.length; i++) {
+                        vm.num = i
+                    }
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function() {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+    // 标题点击事件
+    var i = 1;
+    $(".table_frist li").click(function() {
+        $(".table_frist li").removeClass("f_active");
+        $(this).addClass("f_active");
+        i = $(this).attr("data-id");
+        if (i == 1) {
+            spread_hot();
+            reload();
+        } else if (i == 2) {
+            spread_quan();
+            var html = "<h1><span class='iconfont icon-fenxiang'></span>" + "拥有更多合伙人！" + "</h1>"
+            $(".bot_tex_le").html(html)
+        }
+    });
+
+    // 获取商品的分享图片
+    function imgUrl(goods_id) {
+        $.ajax({
+            url: server_url("share"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                goods_id: goods_id,
+                deviceid: deviceId,
+                token: token,
+                is_short: true
+            },
+            success: function(data) {
+                if (data.code == 0) {
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function(err) {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+    // 复制文案
+
+
+    // 点击分享
+    var goods_id;
+    $("#order_text").on('click', '.right_bot_tex', function() {
+            $(".share_box").show();
+            goods_id = $(this).attr("data-id");
+            if (i == 2) {
+                var share_img = $(this).parent().find("img").attr("src");
+                var title = $(this).parent().siblings().find('p').text();
+                preDownImg(share_img)
+                var clipBoard = api.require('clipBoard');
+                clipBoard.set({
+                    value: title,
+                }, function(ret, err) {
+                    if (ret) {
+                        btToast("文案已复制", 2000);
+                    }
+                });
+            } else if (i == 1) {
+              var poster_img_src = $(this).parent().find("a").attr("href");
+              preDownImg(poster_img_src)
+            }
+        })
+        // 分享朋友
+    function session(imgUrl) {
+        $("#session").click(function() {
+        var wx = api.require('wx');
+        wx.isInstalled(function(ret, err) {
+                if (ret.installed) {
+                    //alert("当前设备已安装微信客户端");
+                    wx.shareImage({
+                        apiKey: 'wx2bcb6c8899b5b2a2',
+                        scene: 'session',
+                        contentUrl: 'widget://' + imgUrl,
+                    }, function(ret, err) {
+                        if (ret.status) {
+                            tips();
+                            btToast("分享成功", 2000);
+                            reload();
+                        } else {
+                            btToast("分享失败", 2000);
+                        }
+                    });
+                } else {
+                    btToast("当前设备未安装微信客户端", 2000);
+                }
+            })
+            })
+
+    }
+    // 分享朋友圈
+    function timeline(imgUrl) {
+        $("#timeline").click(function() {
+        var wx = api.require('wx');
+        wx.isInstalled(function(ret, err) {
+                if (ret.installed) {
+                    //alert("当前设备已安装微信客户端");
+                    wx.shareImage({
+                        apiKey: 'wx2bcb6c8899b5b2a2',
+                        scene: 'timeline',
+                        contentUrl: 'widget://' + imgUrl,
+                    }, function(ret, err) {
+                        if (ret.status) {
+                            tips();
+                            btToast("分享成功", 2000);
+                            reload();
+                        } else {
+                            btToast("分享失败", 2000);
+                        }
+                    });
+                } else {
+                    btToast("当前设备未安装微信客户端", 2000);
+                }
+            })
+            })
+
+    }
+    // 缓存图片
+    // var picNames = goods_id;
+    //预下载
+    function preDownImg(url, goods_id) {
+        api.download({
+            url: url,
+            savePath: 'fs://test' + goods_id + '.jpeg',
+            report: true,
+            cache: false,
+            allowResume: true
+        }, function(ret, err) {
+            if (ret.state == 1) {
+                localStorage.setItem('goods_id', ret.savePath);
+                var path = localStorage.getItem("goods_id");
+
+                timeline(path);
+                session(path);
+            }
+        });
+
+    }
+
+
+    // 遮罩层隐藏
+    $(".share_tips").click(function() {
+        tips();
+    })
+
+    function tips() {
+        $(".share_box").hide();
+    }
+</script>
+
+
+</html>

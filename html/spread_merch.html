@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>产品</title>
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <script src="../js/common.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/spread.css">
+    <script type="text/javascript" src="../js/flexible.js"></script>
+</head>
+<body>
+<div class="tg_page">
+    <div class="cptg_info">
+        <div class="cptg_k">
+            <div class="cptg_img">
+                <img src="" id="proImg">
+            </div>
+            <div class="cptg_text">
+                <div class="cptg_name" id="cname"></div>
+                <div class="cptg_jj">奖金最高<span id="zg">888</span>元</div>
+                <div class="cptg_num">已推广<span id="tgNum"></span>次</div>
+            </div>
+        </div>
+        <div class="cptg_list">
+            <div class="cptg_list_top">
+                <div class="cptg_list_title">奖金介绍</div>
+            </div>
+            <div class="cptg_list_js">
+                <div class="cptg_list_tit flof">体验官</div>
+                <div class="cptg_list_jj cptg_tgy flof" id="tyg">100.00元</div>
+            </div>
+            <div class="cptg_list_js">
+                <div class="cptg_list_tit flof">合伙人</div>
+                <div class="cptg_list_jj cptg_hhr flof" id="hhr">150.00元</div>
+            </div>
+            <div class="cptg_list_js">
+                <div class="cptg_list_tit flof">金牌合伙人</div>
+                <div class="cptg_list_jj cptg_jph flof" id="jphhr">200.00元</div>
+            </div>
+            <div class="cptg_list_fs">结算方式：<span id="jsfs"></span></div>
+        </div>
+        <div class="cptg_list" id="tgfs">
+            <div class="cptg_list_top">
+                <div class="cptg_list_title">推广方式</div>
+            </div>
+        </div>
+        <div class="cptg_list" id="sqtj">
+            <div class="cptg_list_top">
+                <div class="cptg_list_title">申请条件</div>
+            </div>
+        </div>
+        <div class="foot_b">
+            <div class="foot_btn">
+                <div class="apply_btn" onclick="showFrom()">我要申请</div>
+                <div class="share_btn" onclick="share()">一键分享</div>
+            </div>
+        </div>
+        <div class="tx"></div>
+
+        <!--弹窗-->
+        <div class="popup" id="applyPop1">
+            <div class="pop_apply">
+                <div class="apply_top">基本信息</div>
+                <div class="apply_tit">姓名</div>
+                <div class="appl_input">
+                    <input type="text" placeholder="请输入您的姓名" id="uName1">
+                </div>
+                <div class="apply_tit">手机号</div>
+                <div class="appl_input">
+                    <input type="text" placeholder="请输入您的手机号" id="phone1">
+                </div>
+                <div class="apply_xyb" onclick="apply1()">下一步</div>
+                <div class="apply_ts">信息请务必填写准确，填写完后请在30分钟内
+                    完成申请，否则会影响申请的成功率！
+                </div>
+            </div>
+            <div class="iconfont icon-chacha-1 close_pop"></div>
+        </div>
+
+        <!--弹窗2-->
+        <div class="popup" id="applyPop2">
+            <div class="pop_apply2">
+                <div class="apply_top">基本信息</div>
+                <div class="apply_tit">姓名</div>
+                <div class="appl_input">
+                    <input type="text" placeholder="请输入您的姓名" id="uName2">
+                </div>
+                <div class="apply_tit">手机号</div>
+                <div class="appl_input">
+                    <input type="text" placeholder="请输入您的手机号" id="phone2">
+                </div>
+
+                <div class="apply_tit">验证码</div>
+                <div class="appl_input">
+                    <input type="text" placeholder="请输入验证码" style="width: 50%;" id="sms">
+                    <div class="zc_hq flor" id="getsms" onclick=getsms()>获取验证码</div>
+                </div>
+
+                <div class="apply_xyb" onclick="apply2()">下一步</div>
+                <div class="apply_ts">信息请务必填写准确，填写完后请在30分钟内
+                    完成申请，否则会影响申请的成功率！
+                </div>
+            </div>
+            <div class="iconfont icon-chacha-1 close_pop"></div>
+        </div>
+
+
+    </div>
+</div>
+</body>
+<script>
+  var proId = "";
+  var curl = "";
+  apiready = function () {
+    proId = api.pageParam.proid;
+    getProDetailInfo(proId);
+    $(".close_pop").click(function () {
+      $(this).parents(".popup").hide();
+    });
+
+  }
+
+  function getProDetailInfo(proId) {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("pdetail"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        id: proId
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          showProInfo(data.data);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function (err) {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+  function showProInfo(proInfo) {
+    $("#cname").text(proInfo.cname);
+    $("#tgNum").text(proInfo.poster);
+    $("#zg").text(proInfo.ratio_t);
+    var jsfs = "";
+    if (proInfo.tag == 1) {
+      jsfs = "日结";
+    } else if (proInfo.tag == 2) {
+      jsfs = "周结";
+    } else if (proInfo.tag == 3) {
+      jsfs = "月结";
+    }
+    $("#jsfs").text(jsfs);
+    $("#proImg").attr("src", proInfo.img);
+    $("#tyg").text(proInfo.ratio + "元");
+    $("#hhr").text(proInfo.ratio_s + "元");
+    $("#jphhr").text(proInfo.ratio_t + "元");
+    $("#tgfs").append(getListHtml(proInfo.exampro));
+    $("#sqtj").append(getListHtml(proInfo.ps));
+    curl = proInfo.curl;
+  }
+
+
+  function getListHtml(str) {
+    var html = "";
+    if (str) {
+      var arr = str.split("\n");
+      for (var n in arr) {
+        html += '<div class="cptg_list_js">' +
+          '<div class="cptg_list_ff">' + arr[n].trim() + '</div></div>';
+      }
+    }
+    return html;
+  }
+
+  var deviceId = localStorage.getItem("deviceId");
+  var token = "";
+
+  //我要申请
+  function showFrom() {
+    token = localStorage.getItem("userToken");
+    if (token) {
+      //已登录
+      applyWithUserInfo();
+    } else {
+      $("#applyPop2").show();
+    }
+  }
+
+  function applyWithUserInfo() {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("userinfo"),
+      dataType: "JSON",
+      method: "POST",
+      data: {
+        token: token,
+        deviceid: deviceId
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var userInfo = data.data;
+          if (userInfo.real_name != "" && userInfo.certification == 1) {
+            //已实名
+            $("#uName1").val(userInfo.real_name);
+            $("#uName1").attr("disabled", "disabled");
+          } else {
+            $("#uName1").val("");
+            $("#uName1").removeAttr("disabled");
+          }
+          if(userInfo.mobile.match(/^0?1[3|4|5|6|7|8|9]\d{9}$/)){
+            $("#phone1").val(userInfo.mobile);
+            $("#phone1").attr("disabled", "disabled");
+          }else{
+            $("#phone1").val("");
+            $("#phone1").removeAttr("disabled");
+          }
+          $("#applyPop1").show();
+          api.hideProgress();
+        } else {
+          btToast(data.msg, 2000);
+        }
+      },
+      error: function () {
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+
+  //申请(已登录)
+  function apply1() {
+    var name = $("#uName1").val().trim();
+    var phone = $("#phone1").val().trim();
+    if (name == "") {
+      btToast("请输入真实姓名", 2000);
+      return;
+    }
+    if (!phone.match(/^0?1[3|4|5|6|7|8|9]\d{9}$/)) {
+      btToast("请输入正确的手机号", 3000);
+      return;
+    }
+    sendApplyInfo(name, phone, token, deviceId);
+  }
+
+  function sendApplyInfo(name, phone, token, deviceId) {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("apply"),
+      method: "POST",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+        id: proId,
+        real_name: name
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          $(".close_pop").click();
+          weburl(curl);
+        }
+        // else if (data.code == "50001") {
+        //   btToast("请勿重复申请", 2000);
+        // }
+        else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function (err) {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+
+  //未登录
+  function apply2() {
+    var name = $("#uName2").val().trim();
+    var phone = $("#phone2").val().trim();
+    var sms = $("#sms").val().trim();
+    if (name == "") {
+      btToast("请输入真实姓名", 2000);
+      return;
+    }
+    if (!phone.match(/^0?1[3|4|5|6|7|8|9]\d{9}$/)) {
+      btToast("请输入正确的手机号", 3000);
+      return;
+    }
+    if (sms == "") {
+      btToast("请输入验证码", 2000);
+      return;
+    }
+    //申请同时登陆
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("login"),
+      method: "POST",
+      dataType: "json",
+      data: {
+        phone: phone,
+        sms: sms,
+        deviceid: localStorage.getItem("deviceId"),
+        market: localStorage.getItem("market"),
+        source: localStorage.getItem("source")
+      },
+      success: function (data) {
+        if (data) {
+          if (data.code == 0) {
+            reloadPartner();
+            reloadXueyuan();
+            localStorage.setItem("userToken", data.data.token);
+            localStorage.setItem("user_phone", phone);
+            sendApplyInfo(name,phone,data.data.token,deviceId);
+          } else {
+            btToast(data.msg, 2000);
+          }
+        }
+        api.hideProgress();
+      }
+      ,
+      error: function () {
+        btToast("系统繁忙，请稍后再试", 3000);
+        api.hideProgress();
+      }
+    })
+  }
+
+  var send = false;
+
+  function getsms() {
+    var phone = $("#phone2").val().trim();
+    if (!phone.match(/^0?1[3|4|5|6|7|8|9]\d{9}$/)) {
+      btToast("请输入正确的手机号", 3000);
+      return;
+    }
+    if (!send) {
+      send = true;
+      $.ajax({
+        url: server_url("getsms"),
+        method: "POST",
+        dataType: "json",
+        data: {
+          phone: phone
+        },
+        success: function (data) {
+          if (data) {
+            if (data.code == 0) {
+              btToast("验证码发送成功", 2000);
+              //倒计
+              count(60);
+            } else {
+              api.toast(data.msg, 2000);
+            }
+          } else {
+            neterr();
+          }
+        }
+      })
+    }
+  }
+
+  var inteval;
+
+  function count(time) {
+    var count = time;
+    inteval = setInterval(function () {
+      if (count > 0) {
+        $("#getsms").text(count);
+        count -= 1;
+      } else {
+        send = false;
+        clearInterval(inteval);
+        $("#getsms").text("获取验证码");
+      }
+    }, 1000)
+  }
+
+
+  function share(){
+    openWithCheckLogin('poster_invite','一键分享','poster_invite.html',{proId:proId},true)
+  }
+</script>
+</html>

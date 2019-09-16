@@ -1,0 +1,280 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>代客联盟</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="../css/xueyuan.css" />
+    <link rel="stylesheet" type="text/css" href="../css/swiper.min.css" />
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/swiper.min.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+
+</head>
+<style>
+    body {
+        background: #f5f5f5;
+    }
+</style>
+
+<body>
+    <div class="good_box">
+        <div class="good_box_cont" id="goods_info">
+            <div class="goods_top swiper-container">
+                <div class="swiper-wrapper" id="img_src">
+                    <div class="swiper-slide" v-for="site in sites"><img :src="site"></div>
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+            <div class="goods_text">
+                <div class="goods_text_top">
+                    <div class="text_top_left">
+                        <div class="text_top_left_quan">券后价</div>
+                        <h2><span>￥</span>{{coupon_price}}</h2>
+                        <p>原价:￥{{min_group_price}}</p>
+                    </div>
+                    <div class="text_top_right">
+                        销量{{sold_quantity}}件
+                    </div>
+                </div>
+                <div class="goods_title">
+                    <p>{{title}}</p>
+                </div>
+                <div class="goods_img">
+                    <p><span>¥</span>{{coupon_discount}}元</p>
+                </div>
+            </div>
+            <div class="goods_deta">
+                <!-- <h2 id="title">{{goods_desc}}</h2>
+                <p id="price">原价:￥{{min_group_price}}</p>
+                <p id="cou_price"> 券后价:￥{{coupon_price}}</p> -->
+                <p id="url_web">{{clerk}}</p>
+            </div>
+        </div>
+        <div class="goods_bot goods_share">
+            <div class="goods_share_btn" onclick="copyTxt()">
+                <span><img src="../image/icon_08.png" alt=""></span>
+                <p>复制文案</p>
+            </div>
+            <div class="goods_share_btn" id="session">
+                <span><img src="../image/icon_03.png" alt=""></span>
+                <p>微信好友</p>
+            </div>
+            <div class="goods_share_btn" id="timeline">
+                <span><img src="../image/icon_05.png" alt=""></span>
+                <p>微信朋友圈</p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var goods_id = "";
+    apiready = function() {
+        goods_id = api.pageParam.goods_id;
+        goodsInfo(goods_id);
+        imgUrl(goods_id);
+    }
+
+    var vm = new Vue({
+        el: '#goods_info',
+        data: {
+            coupon_price: '',
+            min_group_price: '',
+            sold_quantity: '',
+            title: '',
+            coupon_discount: '',
+            goods_desc: '',
+            sites: [],
+            short_url: '',
+            clerk:''
+        }
+    });
+    // 详情
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+
+    function goodsInfo(goods_id) {
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("good_detail"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                goods_id: goods_id,
+                deviceid: deviceId,
+                token: token
+            },
+            success: function(data) {
+                if (data.code == 0) {
+                    var html = '';
+                    var item = data.data;
+                    vm.title = item.goods_name;
+                    vm.min_group_price = item.min_group_price;
+                    vm.coupon_price = item.coupon_price;
+                    vm.sold_quantity = item.sold_quantity;
+                    vm.coupon_discount = item.coupon_discount;
+                    vm.goods_desc = item.goods_desc;
+                    vm.sites = item.goods_gallery_urls;
+                    vm.short_url = item.short_url;
+                    vm.clerk = item.clerk;
+                    var str = "<p>"+item.clerk+"</p>";
+                    var parent = $('.goods_deta');
+                    parent.html(str)
+                    lunbo();
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+
+            },
+            error: function(err) {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+    // lunbo
+    function lunbo() {
+        var myswiper = new Swiper('.swiper-container', {
+            autoplay: true, //可选选项，自动滑动
+            pagination: {
+                el: '.swiper-pagination',
+            },
+            observer: true, //修改swiper自己或子元素时，自动初始化swiper
+            observeParents: false, //修改swiper的父元素时，自动初始化swiper
+            onSlideChangeEnd: function(swiper) {　　　
+                swiper.update();　　　
+                mySwiper.startAutoplay();　　
+                mySwiper.reLoop();
+            }
+        });
+    }
+    // 复制文案
+    function copyTxt() {
+        var title = $(".goods_deta").text();
+        var clipBoard = api.require('clipBoard');
+        clipBoard.set({
+            value: title,
+        }, function(ret, err) {
+            if (ret) {
+                btToast("文案已复制", 2000);
+            }
+        });
+    }
+
+    // 生成图片
+    function imgUrl(goods_id) {
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("share"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                goods_id: goods_id,
+                deviceid: deviceId,
+                token: token,
+                is_short: true
+            },
+            success: function(data) {
+                if (data.code == 0) {
+                    preDownImg(data.data.img);
+
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function(err) {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+
+    // 分享朋友
+    function session(imgUrl) {
+        $("#session").click(function() {
+            var wx = api.require('wx');
+            wx.isInstalled(function(ret, err) {
+                if (ret.installed) {
+                    //alert("当前设备已安装微信客户端");
+                    wx.shareImage({
+                        apiKey: 'wx2bcb6c8899b5b2a2',
+                        scene: 'session',
+                        contentUrl: 'widget://' + imgUrl,
+                    }, function(ret, err) {
+                        if (ret.status) {
+                            btToast("分享成功", 2000);
+                        } else {
+                            btToast("分享失败", 2000);
+                        }
+                    });
+                } else {
+                    btToast("当前设备未安装微信客户端", 2000);
+                }
+            })
+        })
+
+    }
+    // 分享朋友圈
+    function timeline(imgUrl) {
+        $("#timeline").click(function() {
+            var wx = api.require('wx');
+            wx.isInstalled(function(ret, err) {
+                if (ret.installed) {
+                    //alert("当前设备已安装微信客户端");
+                    wx.shareImage({
+                        apiKey: 'wx2bcb6c8899b5b2a2',
+                        scene: 'timeline',
+                        contentUrl: 'widget://' + imgUrl,
+                    }, function(ret, err) {
+                        if (ret.status) {
+                            btToast("分享成功", 2000);
+                        } else {
+                            btToast("分享失败", 2000);
+                        }
+                    });
+                } else {
+                    btToast("当前设备未安装微信客户端", 2000);
+                }
+            })
+        })
+
+    }
+
+    var picName = new Date().getTime();
+        //预下载
+    function preDownImg(url) {
+        api.download({
+            url: url,
+            savePath: 'fs://test' + picName + '.jpeg',
+            report: false,
+            cache: false,
+            allowResume: true
+        }, function(ret, err) {
+            localStorage.setItem("pathImg", ret.savePath)
+            var path = localStorage.getItem("pathImg");
+            session(path);
+            timeline(path)
+        });
+    }
+</script>
+
+</html>

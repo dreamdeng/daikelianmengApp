@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>注册</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="../css/register.css" />
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <!--<script type="text/javascript" src="../js/mvalidate.js"></script>-->
+</head>
+<style>
+    body {
+        background: #fff;
+    }
+</style>
+
+<body>
+    <div class="login_box">
+        <div class="login_top"><img src="../image/reg_bg.png" alt=""></div>
+        <div class="login_btn">
+            <button class="iphone">
+        手机登录
+      </button>
+            <button class="wechat">
+        <span class="iconfont icon-weixin"></span> 微信登录
+      </button>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+var wx;
+    apiready = function(){
+      wx = api.require('wx');
+    }
+    $(".iphone").click(function() {
+        openwin_header("register_new", "登录", "register_new.html", {}, true);
+    })
+
+    $(".wechat").click(function() {
+        wx.auth({
+            apiKey: ''
+        }, function(ret, err) {
+          dd(ret)
+            if (ret.status) {
+                
+            } else {
+                btToast("系统繁忙，请稍后再试...", 2000);
+            }
+        });
+    })
+</script>
+
+</html>

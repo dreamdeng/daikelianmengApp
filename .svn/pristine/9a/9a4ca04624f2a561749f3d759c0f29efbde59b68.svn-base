@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <script src="../js/template.js"></script>
+    <script src="../js/common.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <title>邀请合伙人收益</title>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="myprofile_spread" id="sOrderList">
+    </div>
+</div>
+</body>
+
+<script type="application/javascript">
+  apiready = function () {
+    api.setRefreshHeaderInfo({
+      loadingImg: 'widget://image/ref.png',
+      bgColor: '#ccc',
+      textColor: '#ffffff',
+      textDown: '下拉刷新',
+      textUp: '松开刷新'
+    }, function (ret, err) {
+      setTimeout(function () {
+        api.refreshHeaderLoadDone();
+        reload();
+      }, 500);
+    });
+    getIncome();
+  }
+
+  function getIncome() {
+    $("#sOrderList").html("");
+    var token = localStorage.getItem("userToken");
+    var deviceId = api.deviceId;
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("income"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+        type: 1
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var html = template('income_list', {list: data.data});
+          $("#sOrderList").append(html);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+  template.helper("dateFormat",function (date,format) {
+    var date =new Date(date);
+    return date.pattern(format);
+  })
+
+</script>
+<script id="income_list" type="text/html">
+    {{each list as data}}
+    <div class="spread_list ">
+        <div class="spread_info">
+            <div class="spread_txt">订单编号：<span>{{data.orders}}</span></div>
+            <div class="spread_txtk flof ">到帐时间：<span class="spread_time">{{data.updatetime | dateFormat:'yyyy-MM-dd'}}</span></div>
+            <div class="spread_txtk flor ">收益来源：<span>{{data.mobile}}</span></div>
+            <div class="spread_txtk flof ">说明：<span class="spread_cp">{{data.remark}}</span></div>
+            <div class="spread_txtk flor ">收益金额：<span>{{data.income}}</span></div>
+        </div>
+    </div>
+    {{/each}}
+</script>
+</html>

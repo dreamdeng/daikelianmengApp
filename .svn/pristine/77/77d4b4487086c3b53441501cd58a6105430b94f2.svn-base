@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <script src="../js/common.js"></script>
+    <title>提现</title>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="myprofile_cash">
+        <div class="account_balance">
+            <div class="ab_num" id="income">0.00</div>
+            <div class="ab_text">账户余额(元)</div>
+            <div class="detail_btn" onclick=openwin_header("user_cash_detail","提现明细","user_cash_detail.html",{},true)>
+                提现明细
+            </div>
+        </div>
+        <div class="zfb_detail" onclick="alipayCash()">
+            <div class="zfb_img flof iconfont">&#xe619;</div>
+            <div class="zfb_tit flof">支付宝提现<span class="range">（单次20—5万元）</span></div>
+        </div>
+    </div>
+</div>
+<div class="detail_popup" id="pop" style="display: none">
+    <div class="pop_bg">
+        <div class="iconfont detail_icon detail_success">&#xe6b1;</div>
+        <div class="detail_tit">提交成功，等待审核</div>
+        <div class="detail_tit2"><span id="popcount">5</span>秒后自动关闭</div>
+        <div class="detail_res">您可在<span
+                onclick='openwin_header("user_cash_detail","提现明细","user_cash_detail.html",{},true)'>提现明细</span>中查看提现进度
+        </div>
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+    var popInt ="";
+  // $(function () {
+  //   $("#pop").hide();
+  // })
+  apiready = function () {
+    api.setRefreshHeaderInfo({
+      loadingImg: 'widget://image/ref.png',
+      bgColor: '#ccc',
+      textColor: '#ffffff',
+      textDown: '下拉刷新',
+      textUp: '松开刷新'
+    }, function (ret, err) {
+      setTimeout(function () {
+        api.refreshHeaderLoadDone();
+        reload();
+      }, 500);
+    });
+    getWithdrawpage();
+  }
+
+  function getWithdrawpage() {
+    var token = localStorage.getItem("userToken");
+    var deviceId = api.deviceId;
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("withdrawpage"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var info = data.data;
+          $("#income").text(info.use_income);
+          if(info.alipay){
+            localStorage.setItem("aliAccount", info.alipay);
+          }
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+  var token = localStorage.getItem("userToken");
+  var deviceId = localStorage.getItem("deviceId");
+  var aliAccount = localStorage.getItem("aliAccount");
+  var money = 0;
+
+  //支付宝提现
+  function alipayCash() {
+    aliAccount= localStorage.getItem("aliAccount");
+    if (!aliAccount) {
+      //未绑定支付宝
+      openwin_header("user_alipay_bingding", "绑定支付宝", "user_alipay_bingding.html", {}, true);
+      return;
+    }
+    var amount = parseInt($("#income").text());
+    money = $("#income").text();
+    if (amount < 10) {
+      btToast("余额不足10元，无法提现", 2000);
+      return;
+    }
+    if (amount > 50000) {
+      btToast("一次提现金额不可超过50000元", 2000);
+      return;
+    }
+    //发起提现请求
+    popConfirm("提示", "余额将全部提现到支付宝 请您确认", "取消", "确认", alipayCash_s)
+  }
+
+
+  function alipayCash_s() {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("withdraw"),
+      method: "POST",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+        money: money
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          $("#pop").show();
+          var count= 5;
+            popInt=setInterval(function () {
+              $("#popcount").text(count);
+              count-=1;
+              if(count<0){
+                clearInterval(popInt);
+                $("#pop").hide();
+                reload();
+              }
+            },1000);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+</script>
+</html>

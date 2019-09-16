@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <script src="../js/common.js"></script>
+    <title>我的钱包</title>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="myprofile_about">
+        <ul>
+            <li class="myprofile_li"
+                onclick='openwin_header("user_alipay_bingding", "绑定支付宝", "user_alipay_bingding.html", {}, true);'>
+                <div class="iconfont uli_img flof">&#xe724;</div>
+                <div class="uli_tit flof">绑定支付宝</div>
+                <div class="iconfont uli_jt flor">&#xe6a7;</div>
+                <div class="ali_info flor" id="alipay">未绑定</div>
+            </li>
+            <li class="myprofile_li" onclick="checkVersion()">
+                <div class="iconfont uli_img flof">&#xe637;</div>
+                <div class="uli_tit flof">当前版本</div>
+                <div class="iconfont uli_jt flor">&#xe6a7;</div>
+                <div class="ali_info flor" id="version">v0.0.0</div>
+            </li>
+            <li class="myprofile_li" onclick="clearcache()">
+                <div class="iconfont uli_img flof">&#xe614;</div>
+                <div class="uli_tit flof">清理缓存</div>
+                <div class="iconfont uli_jt flor">&#xe6a7;</div>
+                <div class="ali_info flor" id="cachesize"></div>
+            </li>
+
+
+            <li class="myprofile_li" onclick="logout()">
+                <div class="iconfont uli_img flof">&#xe623;</div>
+                <div class="uli_tit flof">退出登录</div>
+                <div class="iconfont uli_jt flor">&#xe6a7;</div>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+  var token = localStorage.getItem("userToken");
+  var deviceId = localStorage.getItem("deviceId");
+  apiready = function () {
+    $("#version").text("v" + api.appVersion);
+    if (!token) {
+      $("#alipay").text("未绑定");
+    } else {
+      isbindAlipay(token, deviceId);
+    }
+    getcache();
+  }
+
+  function logout_s() {
+    clearLocalStorage();
+    api.execScript({
+      name: 'root',
+      frameName: 'user',
+      script: 'checkLogin()'
+    });
+    // setTimeout(function() {
+    //     api.openWin({
+    //         name: 'register',
+    //         url: './register.html',
+    //         pageParam: {
+    //             name: 'register'
+    //         }
+    //     });
+    //     api.hideProgress();
+    // }, 2000)
+
+    reloadPartner();
+    reloadXueyuan();
+  }
+
+  function logout() {
+    popConfirm("提示", "是否退出登录", "取消", "确认", logout_s);
+
+  }
+
+  //用户是否绑定支付宝
+  function isbindAlipay(token, deviceId) {
+    $.ajax({
+      url: server_url("isbind"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId
+      },
+      success: function (data) {
+        if (data.code == 0 && data.data.alipay) {
+          $("#alipay").text(data.data.alipay);
+        }
+      },
+      error: function (err) {
+        neterr();
+      }
+    })
+  }
+
+  function getcache() {
+    api.getCacheSize(function (ret, err) {
+      var size = parseInt(ret.size / 1024) + 'KB';
+      $("#cachesize").html(size);
+    });
+  }
+
+  function clearcache() {
+    api.showProgress({title: "", text: "", modal: true});
+    api.clearCache(function () {
+      localStorage.removeItem("posterImgPath");
+      localStorage.removeItem("proShareImg");
+      localStorage.removeItem("updateFlag");
+      api.toast({
+        msg: '清除完成'
+      });
+    });
+    api.hideProgress();
+    $("#cachesize").html("0KB");
+  }
+
+
+  function checkVersion() {
+    api.showProgress({title: "", text: "", modal: true});
+    //加载导航
+    $.ajax({
+      url: server_url("column"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        market: localStorage.getItem("market"),
+        source: localStorage.getItem("source")
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          //判断版本更新
+          var rs = data.data.rs;
+          if (rs && rs.ver > version) {
+            //更新
+            version_control(rs);
+            //下次不再提示更新
+          } else {
+            api.alert({
+              msg: "已是最新版本",
+            }, function () {
+            });
+          }
+          api.hideProgress();
+        }
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+</script>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <link rel="stylesheet" type="text/css" href="../css/common.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+
+    <title>代客圈</title>
+</head>
+
+<body>
+    <div class="myprofile_page">
+        <div class="partner_tab ">
+            <ul class="table_frist sort_list" id="data_time">
+                <li data-id="2" class="self f_active">今日爆款</li>
+                <li data-id="1" class="team">营销发圈</li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script>
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    apiready = function() {
+    }
+
+    var vm = new Vue({
+        el: '#data_time',
+        data: {
+            personal_time: '',
+            team_time: ''
+        }
+    });
+    var obj = new Vue({
+        el: '#order_text',
+        data: {
+            sites: [{
+                source: '',
+                mobile: '',
+                orders: '',
+                orders_title: '',
+                orders_img: '',
+                commision: '',
+                paytime: '',
+                addtime: '',
+                status_name: '',
+                receive_status: '',
+                money: ''
+            }]
+        }
+
+    });
+
+
+
+    // 标题点击事件
+    $(".table_frist li").click(function() {
+        $(".table_frist li").removeClass("f_active");
+        $(this).addClass("f_active");
+
+    });
+
+</script>
+
+
+</html>

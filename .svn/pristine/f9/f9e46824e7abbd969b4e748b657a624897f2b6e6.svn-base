@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>代客联盟</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="../css/partner.css" />
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+    <script src="../js/partner.js"></script>
+</head>
+
+<body>
+    <div class="partinfo">
+        <!-- <div class="partinfo_item01">
+        <div class="partinfo_item01_le">
+          <img src="../image/tx.png">
+        </div>
+        <div class="partinfo_item01_rg">
+          <h1>Hi~我是 <span>金牌合伙人</span></h1>
+          <p>分享权益更多、收益更多的金牌合伙人给你~</p>
+        </div>
+      </div> -->
+        <div class="partinfo_img01">
+            <img :src="img_src" alt="">
+        </div>
+        <div class="partinfo_img02">
+            <img src="../image/bg_jphhr.png" alt="">
+        </div>
+        <div class="partinfo_btn" onclick="alipayParam();">
+            马上成为金牌合伙人
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    apiready = function() {
+        partnerPicurl();
+    }
+    var vm = new Vue({
+        el: '.partinfo',
+        data: {
+            img_src: ''
+        }
+    });
+
+
+    // 二维码图片
+    function partnerPicurl() {
+      var token = localStorage.getItem("userToken");
+      var deviceId = localStorage.getItem("deviceId");
+        $.ajax({
+            url: server_url("picurl"),
+            method: "get",
+            dataType: "JSON",
+            data: {
+                deviceid: deviceId,
+                token: token
+            },
+            success: function(data) {
+                if (data.code == 0) {
+                    vm.img_src = data.data
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function(err) {
+                dd(err)
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+    //请求支付宝支付参数
+    function alipayParam() {
+      var token = localStorage.getItem("userToken");
+      var deviceId = localStorage.getItem("deviceId");
+        //type 1 体验官 2 合伙人 3 金牌合伙人
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("alipay"),
+            method: "POST",
+            dataType: "JSON",
+            data: {
+                token: token,
+                deviceid: deviceId,
+                money: 0.01,
+                type: 4
+            },
+            success: function(data) {
+                dd(data)
+                if (data.code == 0) {
+                    alipay(data.data);
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function(err) {
+              dd(err)
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+
+    //发起支付 调用sdk
+    function alipay(param) {
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        var aliPayPlus = api.require('aliPayPlus');
+        aliPayPlus.payOrder({
+            orderInfo: param
+        }, function(ret, err) {
+          dd(ret)
+            if (ret.code == 9000) {
+                btToast("购买成功", 2000);
+            } else {
+                btToast("支付失败", 2000);
+            }
+            api.hideProgress();
+        })
+    }
+
+
+</script>
+
+</html>

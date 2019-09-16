@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <link rel="stylesheet" type="text/css" href="../css/common.css">
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/swiper.min.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+
+    <title>代客圈</title>
+</head>
+
+<body>
+    <div class="myprofile_page">
+        <h1 class='title_top'>代客圈</h1>
+        <div class="partner_tab ">
+            <ul class="table_frist sort_list" id="data_time">
+                <li data-id="1" class="f_active">今日爆款</li>
+                <li data-id="2">营销发圈</li>
+            </ul>
+        </div>
+        <div class="spread_box" id="order_text">
+
+        </div>
+
+        <p id="bottom" style="text-align: center;padding-top: 20px;padding-bottom: 20px;display: none">
+            ---我是有底线的---
+        </p>
+        <div class="share_box">
+            <div class="share_tips"></div>
+            <div class="share_list">
+                <div class="goods_share_btn" id="session" data-id="1">
+                    <span><img src="../image/icon_03.png" alt=""></span>
+                    <p>微信好友</p>
+                </div>
+                <div class="goods_share_btn" id="timeline" data-id="2">
+                    <span><img src="../image/icon_05.png" alt=""></span>
+                    <p>微信朋友圈</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <img src="" alt="" class="testimg">
+</body>
+<script>
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    apiready = function() {
+        spread_hot(page);
+
+        //设置下拉刷新
+        // api.setRefreshHeaderInfo({
+        //     loadingImg: 'widget://image/ref.png',
+        //     bgColor: '#ccc',
+        //     textColor: '#ffffff',
+        //     textDown: '下拉刷新',
+        //     textUp: '松开刷新'
+        // }, function(ret, err) {
+        //     setTimeout(function() {
+        //         api.refreshHeaderLoad2e();
+        //         reload();
+        //         // checkLogin();
+        //     }, 500);
+        // });
+
+    }
+
+
+    var vm = new Vue({
+        el: '#order_text',
+        data: {
+            sites: [{
+                addtime: '',
+                title: '',
+                poster_img: '',
+                goods_id: '',
+                img: '',
+                price: '',
+                num: '',
+                poster_img: '',
+                min_group_price: '',
+                post_coupon_price: '',
+                short_url: '',
+                cont: 0
+            }]
+        }
+    });
+    // 今日爆款
+    function spread_hot(page) {
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("commend"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                token: token,
+                deviceid: deviceId,
+                page: page
+            },
+            success: function(data) {
+                var item = data.data;
+                if (data.code == 0) {
+                    var html = '',type_num=1;
+                    for (var i = 0; i < item.length; i++) {
+                        html += '<div class="spread_lists">' +
+                            '<div class="list_left"><img src="../image/tx.png"></div>' +
+                            '<div class="list_right">' +
+                            '<div class="list_right_top">' +
+                            '<h1>代客选</h1>' +
+                            '<h4>' + item[i].addtime + '</h4>' +
+                            '</div>' +
+                            '<div class="list_right_cen commend">' +
+                            '<p>原价：' + item[i].min_group_price + '</p>' +
+                            '<p>券后价：' + item[i].post_coupon_price + '</p>' +
+                            '<p>下单地址：' + item[i].short_url + '</p>' +
+                            '<p>' + item[i].title + '</p>' +
+                            '</div>' +
+                            '<div class="list_right_bot">' +
+                            '<div class="right_bot_img"><img src=' + item[i].img + ' alt=""></div>' +
+                            '<div class="right_bot_tex" data-id=' + item[i].goods_id + '>' +
+                            '<div class="bot_tex_le">' +
+                            '<h1><span class="iconfont icon-fenxiang"></span>分享赚<span>' + item[i].price + '</span>元</h1>' +
+                            '</div>' +
+                            '<div class="bot_tex_rig">一键分享</div>' +
+                            '</div>' +
+                            '<div class="poster_img_src" style="display:none">' +
+                            '<a href=' + item[i].poster_img + '></a>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>'
+                    }
+                    if (page == 1) {
+                        $("#order_text").html(html);
+
+                    } else if (page >= 2) {
+                        console.log(page)
+                        $("#order_text").append(html);
+                    }
+
+                    scrolltobottom(page, item.length,type_num)
+
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+
+            },
+            error: function() {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+    // 营销发圈
+    function spread_quan(page) {
+        api.showProgress({
+            title: "",
+            text: "",
+            modal: true
+        });
+        $.ajax({
+            url: server_url("Marketing"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                token: token,
+                deviceid: deviceId,
+                page: page
+            },
+            success: function(data) {
+                var item = data.data;
+                if (data.code == 0) {
+                    var cont = '',type_num=2;
+                      // $("#order_text").html();
+                    for (var i = 0; i < item.length; i++) {
+                        cont += '<div class="spread_lists">' +
+                            '<div class="list_left"><img src="../image/tx.png"></div>' +
+                            '<div class="list_right">' +
+                            '<div class="list_right_top">' +
+                            '<h1>代客选</h1>' +
+                            '<h4>' + item[i].addtime + '</h4>' +
+                            '</div>' +
+                            '<div class="list_right_cen marketing">' +
+                            '<p class="tit">' + item[i].title + '</p>' +
+                            '</div>' +
+                            '<div class="list_right_bot">' +
+                            '<div class="right_bot_img"><img src=' + item[i].img + ' alt=""></div>' +
+                            '<div class="right_bot_tex" data-id=' + item[i].goods_id + '>' +
+                            '<div class="bot_tex_le">' +
+                            '<h1><span class="iconfont icon-fenxiang"></span>拥有更多合伙人！</h1>' +
+                            '</div>' +
+                            '<div class="bot_tex_rig">一键分享</div>' +
+                            '</div>' +
+                            '<div class="poster_img_src" style="display:none">' +
+                            '<a href=' + item[i].poster_img + '></a>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>'
+                    }
+                    if (page == 1) {
+                        $("#order_text").html(cont);
+                    } else if (page >= 2) {
+
+                        $("#order_text").append(cont);
+                    }
+                    scrolltobottom(page, item.length,type_num)
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function() {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+    // 标题点击事件
+    var m = 1;
+    $(".marketing").hide();
+    $(".table_frist li").click(function() {
+        $(".table_frist li").removeClass("f_active");
+        $(this).addClass("f_active");
+        m = $(this).attr("data-id");
+        if (m == 1) {
+            var page_hot=1;
+            spread_hot(page_quan);
+            reload();
+            $(".commend").show();
+            $(".marketing").hide();
+        } else if (m == 2) {
+            var page_quan=1;
+            spread_quan(page_quan);
+            $(".commend").hide();
+            $(".marketing").show();
+
+        }
+    });
+
+    // 获取商品的分享图片
+    function imgUrl(goods_id) {
+        $.ajax({
+            url: server_url("share"),
+            method: "post",
+            dataType: "JSON",
+            data: {
+                goods_id: goods_id,
+                deviceid: deviceId,
+                token: token,
+                is_short: true
+            },
+            success: function(data) {
+                if (data.code == 0) {} else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function(err) {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+
+    // 点击分享
+    var goods_id;
+    $("#order_text").on('click', '.right_bot_tex', function() {
+            $(".share_box").show();
+            goods_id = $(this).attr("data-id");
+            if (m == 2) {
+                var share_img = $(this).parent().find("img").attr("src");
+                var title = $(this).parent().siblings().find('.tit').text();
+                share_down(share_img)
+                var clipBoard = api.require('clipBoard');
+                clipBoard.set({
+                    value: title,
+                }, function(ret, err) {
+                    if (ret) {
+                        btToast("文案已复制", 2000);
+                    }
+                });
+            } else if (m == 1) {
+                var text = $(this).parent().siblings().find('p').text();
+                var clipBoard = api.require('clipBoard');
+                clipBoard.set({
+                    value: text,
+                }, function(ret, err) {
+                    if (ret) {
+                        btToast("文案已复制", 2000);
+                    }
+                });
+                var poster_img_src = $(this).parent().find("a").attr("href");
+                share_down(poster_img_src)
+            }
+        })
+        //预下载
+    var picName = new Date().getTime();
+
+    function share_down(url_src) {
+        // 手机版本
+        api.download({
+            url: url_src,
+            savePath: 'fs://' + picName + '.jpg',
+            report: true,
+            cache: true,
+            allowResume: true
+        }, function(ret, err) {
+            if (ret.state == 1) {
+                //下载成功
+                btToast("下载成功", 2000);
+                localStorage.setItem('img_Url', ret.savePath);
+                var img_Url = localStorage.getItem("img_Url");
+                var type;
+                $("#session").click(function() {
+                    type = 'session';
+                    shareImage(type, img_Url);
+                })
+                $("#timeline").click(function() {
+                    type = 'timeline';
+                    shareImage(type, img_Url);
+                })
+            } else {
+                btToast("图片下载中，请稍后...", 2000);
+            }
+        });
+    }
+
+    function shareImage(type, img_Url) {
+        var wx = api.require('wx');
+        // 手机版本
+        wx.shareImage({
+            apiKey: '',
+            scene: type,
+            contentUrl: img_Url,
+        }, function(ret, err) {
+            if (ret.status) {
+                reload();
+            } else {
+                btToast("分享失败", 2000);
+            }
+        });
+    }
+
+    // 分页
+    var page = 1;
+
+    function scrolltobottom(page, list,type_num) {
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 0 //距离底部距离
+            }
+        }, function(ret, err) {
+            page++
+            if (list >= 3) {
+                $api.byId("bottom").style.display = "none"
+            } else {
+                $api.byId("bottom").style.display = "block";
+            }
+            if(type_num==1){
+              spread_hot(page);
+            }else{
+              spread_quan(page)
+            }
+        });
+    }
+
+
+    // 遮罩层隐藏
+    $(".share_tips").click(function() {
+        tips();
+    })
+
+    function tips() {
+        $(".share_box").hide();
+    }
+</script>
+
+</html>

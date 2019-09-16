@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>代客联盟</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="../css/partner.css" />
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+    <script src="../js/partner.js"></script>
+</head>
+
+<body>
+    <div class="partner_box" id="partner_box">
+        <div class="partner_top">
+            <div class="avatar"><img src="../image/tx.png" id="cimg"></div>
+            <p>{{tel}}</p>
+        </div>
+        <div class="partner_cont">
+            <div class="partner_posi">
+                <div class="partner_info">
+                    <div class="partner_info_box">
+                        <div class="partner_info_left">
+                            <p>升级金牌合伙人进度</p>
+                        </div>
+                        <div class="partner_info_right">
+                            升级规则
+                        </div>
+                    </div>
+                    <div class="partner_grade">
+                        <div class="partner_grade_one">
+                            <div class="grade_one">
+                                <div class="one_right_top">
+                                    <h1>当前有效合伙人</h1>
+                                    <p>20人</p>
+                                </div>
+                                <div class="tips"></div>
+                                <div class="one_right_bott">
+                                    <span><img src="../image/icon018.png" alt=""></span>
+                                    <p>{{effnum}}人</p>
+                                </div>
+                            </div>
+                            <div class="grade_one">
+                                <div class="one_right_top">
+                                    <h1>当前有效订单数</h1>
+                                    <p>200单</p>
+                                </div>
+                                <div class="tips"></div>
+                                <div class="one_right_bott">
+                                    <span><img src="../image/icon018.png" alt=""></span>
+                                    <p>{{ordnum}}单</p>
+                                </div>
+                            </div>
+                            <div class="grade_button">
+                                <h1>限时免费升级</h1>
+                                <p>（活动结束将关闭免费通道，需付费399元）</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="partner_text">
+                    <div class="partner_text_one">
+                        <div class="text_one_top">
+                            金牌合伙人权益
+                        </div>
+                        <div class="text_one_icon">
+                            <div class="text_one_icon01">
+                                <div class="icon01_deta">
+                                    <img src="../image/icon001.png" alt="">
+                                    <p>合伙人全部权益</p>
+                                </div>
+                                <div class="icon01_deta">
+                                    <img src="../image/icon002.png" alt="">
+                                    <p>自买返佣140%</p>
+                                </div>
+                                <div class="icon01_deta">
+                                    <img src="../image/icon003.png" alt="">
+                                    <p>分享返佣140%</p>
+                                </div>
+                            </div>
+                            <div class="text_one_icon01">
+                                <div class="icon01_deta">
+                                    <img src="../image/icon004.png" alt="">
+                                    <p>直属合伙人出单奖励30%</p>
+                                </div>
+                                <div class="icon01_deta">
+                                    <img src="../image/icon005.png" alt="">
+                                    <p>团队课程指导</p>
+                                </div>
+                                <div class="icon01_deta">
+                                    <img src="../image/icon006.png" alt="">
+                                    <p>专属运营答疑</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="partner_text_one partner_text_two">
+                        <div class="text_one_top">
+                            合伙人权益
+                        </div>
+                        <div class="text_one_icon">
+                            <div class="text_one_icon01">
+                                <div class="icon01_deta">
+                                    <img src="../image/icon007.png" alt="">
+                                    <p>合伙人权益</p>
+                                </div>
+                                <div class="icon01_deta">
+                                    <img src="../image/icon008.png" alt="">
+                                    <p>自买返佣100%</p>
+                                </div>
+                                <div class="icon01_deta">
+                                    <img src="../image/icon009.png" alt="">
+                                    <p>分享返佣100%</p>
+                                </div>
+                            </div>
+                            <div class="text_one_icon01">
+                                <div class="icon01_deta">
+                                    <img src="../image/icon010.png" alt="">
+                                    <p>直属合伙人出单奖励20%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--弹窗-->
+        <div class="popup" id="applyPop1">
+            <div class="popup_bg"></div>
+            <div class="iconfont icon-chacha-1 close_pop"></div>
+            <div class="popup_detail"></div>
+        </div>
+
+    </div>
+</body>
+<script type="text/javascript">
+    apiready = function() {
+            partnerLevel();
+            popupBtn();
+
+        }
+        // 等级制度
+    var vm = new Vue({
+        el: '#partner_box',
+        data: {
+            avatar: '',
+            tel: '',
+            effnum: '',
+            ordnum: ''
+        }
+    });
+
+    // 升级进度
+    function partnerLevel() {
+        var token = localStorage.getItem("userToken");
+        var deviceId = localStorage.getItem("deviceId");
+        vm.tel = localStorage.getItem("user_phone");
+        if (!token) {
+            api.showProgress({
+                title: "",
+                text: "",
+                modal: true
+            });
+            btToast("请先登录", 1000);
+            setTimeout(function() {
+                api.hideProgress();
+                openwin_header_in("register", "登录", "register.html", {}, true);
+            }, 1000);
+            return;
+        } else {
+            $.ajax({
+                url: server_url("Level"),
+                method: "post",
+                dataType: "JSON",
+                data: {
+                    deviceid: deviceId,
+                    token: token
+                },
+                success: function(data) {
+                    if (data.code == 0) {
+                        var effnum = data.data.inviter;
+                        var ordnum = data.data.orders;
+                        vm.effnum = data.data.inviter;
+                        vm.ordnum = data.data.orders;
+                        levelUp(effnum, ordnum);
+                    } else {
+                        btToast(data.msg, 2000);
+                    }
+                    api.hideProgress();
+                },
+                error: function(err) {
+                    api.hideProgress();
+                    btToast("系统繁忙，请稍后再试", 2000);
+                }
+            })
+        }
+    }
+    // 点击升级
+    function levelUp(effnum, ordnum) {
+        if (effnum == 20 && ordnum == 200) {
+            $(".grade_button").click(function() {
+              dd(1111111)
+                $.ajax({
+                    url: server_url("level_up"),
+                    method: "post",
+                    dataType: "JSON",
+                    data: {},
+                    success: function(data) {
+                        dd(data)
+
+                        api.hideProgress();
+                    },
+                    error: function(err) {
+                        api.hideProgress();
+                        btToast("当前不能升级", 2000);
+                    }
+                })
+            })
+        } else {
+            $(".grade_button").click(function() {
+                btToast("未满足条件，当前不能升级", 2000);
+            })
+        }
+    }
+    // 规则
+    function text() {
+        $.ajax({
+            url: server_url("level_content"),
+            method: "GET",
+            dataType: "JSON",
+            data: {},
+            success: function(data) {
+                if (data.code == 0) {
+                    $(".popup_detail").html(data.data)
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function(err) {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        })
+    }
+
+    function popupBtn() {
+        var token = localStorage.getItem("userToken");
+        var deviceId = localStorage.getItem("deviceId");
+        $("#applyPop1").hide();
+        $(".partner_info_right").click(function() {
+            $("#applyPop1").toggle();
+            text();
+        })
+        $(".close_pop,.popup_bg").click(function() {
+            $("#applyPop1").hide();
+        })
+    }
+</script>
+
+</html>

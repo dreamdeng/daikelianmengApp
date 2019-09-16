@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/partner.css">
+    <script src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+
+    <title></title>
+</head>
+<body>
+<div class="tg_page">
+    <div class="fxhb" style="position: relative;">
+      <div class="poster_box" id="invite_code">
+        <div class="poster_top">
+          <h1>邀请码：<span>{{invite_code}}</span></h1>
+          <p>分享邀请链接或者分享海报给好友</p>
+          <p>好友注册后将成为你的合伙人</p>
+        </div>
+        <div class="poster_cen" >
+            <img src="../image/1.jpg" id="poster">
+        </div>
+        <div class="fx_bar">
+          <button type="button" name="button" id="shareUrl">分享邀请链接</button>
+          <button type="button" name="button" id="sharePoster">分享邀请海报</button>
+        </div>
+      </div>
+
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+var vm = new Vue({
+    el: '#invite_code',
+    data: {
+        invite_code: '',
+    }
+});
+  var url = "";
+  apiready = function () {
+    var token = localStorage.getItem("userToken");
+    var deviceId = localStorage.getItem("deviceId");
+    api.showProgress({title: "", text: "请稍候", modal: true});
+    $.ajax({
+      url: server_url("spread"),
+      method: "POST",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+      },
+      success: function (data) {
+        dd(data)
+        if (data.code == 0) {
+          $("#poster").data("imgPath", data.data.img);
+          vm.invite_code = data.data.invite_code;
+          //预下载图片
+          // preDownImg(data.data.img);
+          var path = localStorage.getItem("posterImgPath")
+          if (path) {
+            $("#poster").attr("src", path);
+          } else {
+            api.imageCache({
+              url: data.data.img,
+              thumbnail: false
+            }, function (ret, err) {
+              var url = ret.url;
+              $("#poster").attr("src", url);
+              localStorage.setItem("posterImgPath", url);
+              shareUrl(url)
+            });
+          }
+          url = data.data.url;
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function (data) {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+  var picName3 = new Date().getTime();
+  function shareUrl(contentUrl){
+    $("#shareUrl").click(function(){
+      var wx = api.require('wx');
+      wx.isInstalled(function(ret, err) {
+        if (ret.installed) {
+          //alert("当前设备已安装微信客户端");
+          wx.shareVideo({
+            apiKey : '',
+            scene : 'session',
+            title : "当前链接",
+            description : '阅读更多文章请安装APP',
+            thumb : '../image/logo.png',
+            contentUrl : contentUrl,
+          }, function(ret, err) {
+            if (ret.status) {
+              btToast("分享成功", 2000);
+              //alert(err.code);
+              btToast("分享失败", 2000);
+            }
+          });
+        } else {
+          btToast("当前设备未安装微信客户端", 2000);
+        }
+      });
+    })
+  }
+
+
+  //预下载
+  // function preDownImg(url) {
+  //   api.download({
+  //     url: url,
+  //     savePath: 'fs://test' + picName3 + '.jpeg',
+  //     report: false,
+  //     cache: false,
+  //     allowResume: true
+  //   }, function (ret, err) {
+  //   });
+  // }
+
+  // function sharePoster() {
+  //   var url = $("#poster").data("imgPath");
+  //   if (url != "") {
+  //     api.saveMediaToAlbum({
+  //       path: 'fs://test' + picName3 + '.jpeg',
+  //     }, function (ret1, err1) {
+  //       if(ret1 && ret1.status){
+  //         api.confirm({
+  //           title: '是否打开微信？',
+  //           msg: '图片已保存',
+  //           buttons: ['取消', '确定']
+  //         }, function (ret, err) {
+  //           var index = ret.buttonIndex;
+  //           if (index == 2) {
+  //             window.location.href = 'weixin://'
+  //           }
+  //         });
+  //       }else{
+  //         btToast("图片保存失败", 2000);
+  //       }
+  //     });
+  //   }
+  // }
+  //
+  // function saveImg() {
+  //   api.saveMediaToAlbum({
+  //     path: 'fs://test' + picName3 + '.jpeg',
+  //   }, function (ret1, err1) {
+  //     if(ret1 && ret1.status){
+  //       btToast("海报已保存", 2000);
+  //     }else{
+  //       btToast("海报保存失败", 2000);
+  //     }
+  //   });
+  // }
+  //
+  //
+  // function shareUrl() {
+  //   clip(url, "是否打开微信？", "链接已复制");
+  // }
+  //
+  // function clipUrl() {
+  //   var clipBoard = api.require('clipBoard');
+  //   clipBoard.set({
+  //     value: url
+  //   }, function (ret, err) {
+  //     if (ret) {
+  //       btToast("链接已复制", 2000);
+  //     }
+  //   });
+  // }
+</script>
+</html>

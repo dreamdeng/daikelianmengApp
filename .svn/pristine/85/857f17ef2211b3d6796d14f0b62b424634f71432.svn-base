@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>UI</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport"/>
+    <meta content="yes" name="apple-mobile-web-app-capable"/>
+    <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+    <meta content="telephone=no" name="format-detection"/>
+    <link rel="stylesheet" href="../css/ui.css"/>
+    <link rel="stylesheet" href="../iconfont/iconfont.css"/>
+    <script src="../js/jquery.js"></script>
+    <script src="../js/common.js"></script>
+</head>
+<body ontouchstart="">
+    <div class="verbg" id="progressbox">
+        <div id="progress" class="progress-bar">
+            <div class="progressbar-content">
+                <span class="verdownload">正在下载</span>
+                安装后请重新运行程序
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="../js/ui.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        url=api.pageParam.url;
+        console.log(url);
+        $('#progress').progressBar({
+            type: 'circle',
+            strokeWidth: 5,
+            strokeColor: '#556BAD',
+            trailWidth: 5,
+            trailColor: '#EE8346',
+            fill: '#FFF',
+            progress: 0,
+            binder: '#progressbox'
+        });
+
+
+        api.download({
+            url : url,
+            report : true
+        }, function(ret, err) {
+            if (ret && 0 == ret.state) {/* 下载进度 */
+                $('#progress').progressBar('set', ret.percent/100);
+            }
+            if (ret && 1 == ret.state) {/* 下载完成 */
+                var savePath = ret.savePath;
+                api.installApp({appUri : savePath});
+                $('.verdownload').html("下载完成");
+                $('#progress').append('<a href="javascript:api.installApp({appUri : \''+savePath+'\'});" class="btn-block btn-hollow">立即安装</a>');
+            }
+        });
+    };
+</script>

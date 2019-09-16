@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/partner.css">
+    <script src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/vue.min.js"></script>
+
+    <title></title>
+</head>
+
+<body>
+    <div class="tg_page">
+        <div class="fxhb" style="position: relative;">
+            <div class="poster_box" id="invite_code">
+                <div class="poster_top">
+                    <h1>邀请码：<span>{{invite_code}}</span></h1>
+                    <p>分享邀请链接或者分享海报给好友</p>
+                    <p>好友注册后将成为你的合伙人</p>
+                </div>
+                <div class="poster_cen">
+                    <img :src="poster_img" id="poster">
+                </div>
+                <div class="fx_bar">
+                    <button type="button" name="button" id="shareUrl">分享邀请链接</button>
+                    <button type="button" name="button" id="sharePoster">分享邀请海报</button>
+                </div>
+            </div>
+
+        </div>
+        <div class="share_box">
+            <div class="share_tips"></div>
+            <div class="share_list">
+                <div class="goods_share_btn" id="session">
+                    <span><img src="../image/icon_03.png" alt=""></span>
+                    <p>微信好友</p>
+                </div>
+                <div class="goods_share_btn" id="timeline">
+                    <span><img src="../image/icon_05.png" alt=""></span>
+                    <p>微信朋友圈</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+<script type="application/javascript">
+    var vm = new Vue({
+        el: '#invite_code',
+        data: {
+            invite_code: '',
+            poster_img: ''
+        }
+    });
+    var url = "";
+    apiready = function() {
+            poster();
+        }
+        // 图片展示
+    function poster() {
+        var token = localStorage.getItem("userToken");
+        var deviceId = localStorage.getItem("deviceId");
+        api.showProgress({
+            title: "",
+            text: "请稍候",
+            modal: true
+
+        });
+        $.ajax({
+            url: server_url("spread"),
+            method: "POST",
+            dataType: "JSON",
+            data: {
+                token: token,
+                deviceid: deviceId,
+            },
+            success: function(data) {
+                if (data.code == 0) {
+                    // $("#poster").data("imgPath", data.data.img);
+                    vm.poster_img = data.data.img
+                    vm.invite_code = data.data.invite_code;
+                    // 预下载图片
+                    preDownImg(data.data.img);
+
+                    var url_src = data.data.url
+                    var path = localStorage.getItem("posterImgPath");
+                    console.log(path)
+                    shareUrl(url_src, path)
+                    if (path) {
+                        $("#poster").attr("src", path);
+
+                    } else {
+                        api.imageCache({
+                            url: data.data.img,
+                            thumbnail: false
+                        }, function(ret, err) {
+                            var url = ret.url;
+                            $("#poster").attr("src", url);
+                            localStorage.setItem("posterImgPath", url);
+                        });
+                    }
+
+                } else {
+                    btToast(data.msg, 2000);
+                }
+                api.hideProgress();
+            },
+            error: function(data) {
+                api.hideProgress();
+                btToast("系统繁忙，请稍后再试", 2000);
+            }
+        });
+    }
+    // 预下载图片
+    var picName = new Date().getTime();
+    //预下载
+    function preDownImg(url) {
+        api.download({
+            url: url,
+            savePath: 'fs://test' + picName + '.jpeg',
+            report: false,
+            cache: false,
+            allowResume: true
+        }, function(ret, err) {
+            localStorage.setItem("posterImgPath", ret.savePath);
+            var path = localStorage.getItem("posterImgPath", ret.savePath);
+            if (ret.state == 1) {
+                btToast("分享海报已下载，请分享", 2000);
+                sharePoster(path)
+            } else {
+                btToast("分享海报下载中，请稍等", 2000);
+            }
+        });
+    }
+    // 分享朋友 链接
+    function session01(url_src, url_img) {
+      console.log(url_src)
+      console.log(url_img)
+      var wx = api.require('wx');
+      wx.isInstalled(function(ret, err) {
+          if (ret.installed) {
+              wx.shareWebpage({
+                  apiKey: '',
+                  scene: 'session',
+                  title: '代客联盟',
+                  description: '自买省钱，分享赚钱，快来加入吧',
+                  thumb: 'widget://res/img_src.jpg',
+                  contentUrl: url_src,
+              }, function(ret, err) {
+                  if (ret.status) {
+                      tips();
+                      btToast("分享成功", 2000);
+                      reload();
+                  } else {
+                      tips();
+                      btToast("分享失败", 2000);
+                      reload();
+                  }
+              });
+          } else {
+              btToast("当前设备未安装微信客户端", 2000);
+          }
+      });
+
+    }
+    // 分享朋友 链接
+    function timeline01(url_src, url_img) {
+        var wx = api.require('wx');
+        wx.isInstalled(function(ret, err) {
+            if (ret.installed) {
+                wx.shareWebpage({
+                    apiKey: '',
+                    scene: 'timeline',
+                    title: '代客联盟',
+                    description: '自买省钱，分享赚钱，快来加入吧',
+                    thumb: 'widget://res/img_src.jpg',
+                    contentUrl: url_src,
+                }, function(ret, err) {
+                    if (ret.status) {
+                        tips();
+                        btToast("分享成功", 2000);
+                        reload();
+                    } else {
+                        tips();
+                        btToast("分享失败", 2000);
+                        reload();
+                    }
+                });
+            } else {
+                btToast("当前设备未安装微信客户端", 2000);
+            }
+        });
+    }
+    // 分享朋友 图片
+    function session02(url_img) {
+            var wx = api.require('wx');
+            wx.isInstalled(function(ret, err) {
+                if (ret.installed) {
+                    wx.shareImage({
+                        apiKey: '',
+                        scene: 'session',
+                        contentUrl: 'widget://' + url_img,
+                    }, function(ret, err) {
+                        if (ret.status) {
+                            tips();
+                            btToast("分享成功", 2000);
+                            reload();
+                        } else {
+                            tips();
+                            btToast("分享失败", 2000);
+                            reload();
+                        }
+                    });
+                } else {
+                    btToast("当前设备未安装微信客户端", 2000);
+                }
+            });
+    }
+    // 分享朋友圈 图片
+    function timeline02(url_img) {
+        var wx = api.require('wx');
+        wx.isInstalled(function(ret, err) {
+            if (ret.installed) {
+                //alert("当前设备已安装微信客户端");
+                wx.shareImage({
+                    apiKey: '',
+                    scene: 'timeline',
+                    contentUrl: 'widget://' + url_img,
+                }, function(ret, err) {
+                    if (ret.status) {
+                        tips();
+                        btToast("分享成功", 2000);
+                        reload();
+                    } else {
+                        tips();
+                        btToast("分享失败", 2000);
+                        reload();
+                    }
+                });
+            } else {
+                btToast("当前设备未安装微信客户端", 2000);
+            }
+        });
+    }
+
+    // 点击链接
+    function shareUrl(url_src, url_img) {
+        $("#shareUrl").click(function() {
+            $(".share_box").show();
+            $("#session").click(function() {
+                session01(url_src, url_img);
+            });
+            $("#timeline").click(function() {
+                timeline01(url_src, url_img);
+            });
+        })
+    }
+    // 点击图片
+    function sharePoster(url_img) {
+
+        $("#sharePoster").click(function() {
+            $(".share_box").show();
+            $("#session").click(function() {
+                session02(url_img);
+            });
+            $("#timeline").click(function() {
+                timeline02(url_img);
+            });
+        })
+    }
+
+    // 遮罩层隐藏
+    $(".share_tips").click(function() {
+        tips();
+    })
+
+    function tips() {
+        $(".share_box").hide();
+    }
+</script>
+
+</html>

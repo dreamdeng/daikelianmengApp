@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <script src="../js/common.js"></script>
+    <title></title>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="system_news" id="content">
+
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+  apiready = function () {
+    var docId = api.pageParam.docId;
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("office"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+       id:docId
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          $("#content").html(data.data.content);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+</script>
+</html>

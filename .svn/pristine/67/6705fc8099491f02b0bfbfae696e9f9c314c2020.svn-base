@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/template.js"></script>
+    <title>订单列表</title>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="partner_tab">
+        <ul class="table_frist">
+            <li class="f_active">
+                <div class="zt"></div>
+                推广合伙人
+            </li>
+            <li>
+                <div class="zt"></div>
+                推广产品
+            </li>
+        </ul>
+        <div class="content_frist" id="new_order_list">
+            <div class="wra_frist tgr">
+                <ul class="table_second" id="new_order">
+                    <li class="s_active">待结算</li>
+                    <li>已结算</li>
+                    <li>已退款</li>
+                </ul>
+                <div class="content_second">
+                    <div class="content_info new_tips">提示：您的邀请人付款后如未有申请退款情况，将在两个工作日内为您自动结算。</div>
+                    <div class="wra_second s_active">
+                        <div class="myprofile_spread" id="order_list">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content_frist">
+            <div class="wra_frist tgr f_active">
+                <ul class="table_second" id="status_tag" style="display: none">
+                    <li class="s_active">审核中(<span id="shz"></span>)</li>
+                    <li>已通过(<span id="ytg"></span>)</li>
+                    <li>未通过(<span id="wtg"></span>)</li>
+                </ul>
+                <div class="content_second">
+                    <div class="content_info" id="tip" style="display: none">提示：本列表是客户在代客联盟填写记录，不能视为官方申请记录</div>
+                    <div class="wra_second s_active">
+                        <div class="myprofile_spread" id="order_list">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+  var token = localStorage.getItem("userToken");
+  var deviceId = localStorage.getItem("deviceId");
+  apiready = function () {
+    getNewOrderlist(1, 1);
+  }
+
+  // 推广产品
+  function getOrderlist(type, status) {
+    //type 1 合伙人订单，2 产品
+    //status 1 审核中 2、已通过、3、未通过
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("orderlist"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+        type: type,
+        status: status
+      },
+      success: function (data) {
+        // alert(JSON.stringify(data))
+        if (data.code == 0) {
+          if (type == 2) {
+            //产品订单
+            showProList(data.data);
+          } else if (type == 1) {
+            showPartnerList(data.data);
+          }
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+// 推广合伙人
+function getNewOrderlist(type, status) {
+  //type 1 合伙人订单，2 产品
+  //status 1 审核中 2、已通过、3、未通过
+  api.showProgress({title: "", text: "", modal: true});
+  $.ajax({
+    url: server_url("neworderlist"),
+    method: "GET",
+    dataType: "JSON",
+    data: {
+      token: token,
+      deviceid: deviceId,
+      type: type,
+      status: status
+    },
+    success: function (data) {
+      // alert(JSON.stringify(data))
+      if (data.code == 0) {
+        if (type == 2) {
+          //产品订单
+          showProList(data.data);
+        } else if (type == 1) {
+          showPartnerList(data.data);
+        }
+      } else {
+        btToast(data.msg, 2000);
+      }
+      api.hideProgress();
+    },
+    error: function () {
+      api.hideProgress();
+      btToast("系统繁忙，请稍后再试", 2000);
+    }
+  })
+}
+
+  $(document).ready(function () {
+    $(".table_frist li").click(function () {
+      $(".table_frist li").removeClass("f_active");
+      $(this).addClass("f_active");
+      var f_index = $(this).index();
+      if (f_index == 0) {
+        $(".content_frist").eq(0).show().siblings(".content_frist").hide();
+        $("#new_order li").eq(0).siblings("li").removeClass("s_active");
+        $("#new_order li").eq(0).addClass("s_active");
+        //推广合伙人
+          getNewOrderlist(1, 2);
+      }
+      if (f_index == 1) {
+        //推广产品
+        getOrderlist(2, f_index + 1);
+        $(".content_frist").eq(0).hide().siblings(".content_frist").show();
+        $("#status_tag li").eq(0).siblings("li").removeClass("s_active");
+        $("#status_tag li").eq(0).addClass("s_active");
+      }
+    });
+    $("#new_order li").click(function () {
+      $(this).siblings("li").removeClass("s_active");
+      $(this).addClass("s_active");
+      var f_index = $(this).index();
+      getNewOrderlist(1, f_index + 1);
+    });
+    $("#status_tag li").click(function () {
+      $(this).siblings("li").removeClass("s_active");
+      $(this).addClass("s_active");
+      var f_index = $(this).index();
+      getOrderlist(2, f_index + 1);
+    });
+  })
+
+
+  function showProList(proList) {
+    var total = proList.total;
+    $("#shz").text(total.sh);
+    $("#ytg").text(total.tg);
+    $("#wtg").text(total.wtg);
+    $("#status_tag").show();
+    $("#tip").show();
+    var html = template('pro_orders', {list: proList.data});
+    $("#order_list").html(html);
+  }
+
+  function showPartnerList(part_lsit) {
+    $("#status_tag").hide();
+    $("#tip").hide();
+    var html = template('part_orders', {list: part_lsit});
+    $("#order_list").html(html);
+  }
+
+
+  template.helper("dateFormat", function (date, format) {
+    var date = new Date(date);
+    return date.pattern(format);
+  })
+</script>
+
+<script id="pro_orders" type="text/html">
+    {{each list as data}}
+    <div class="spread_orderlist ">
+        <div class="spread_orderinfo">
+            <div class="spread_txt">订单编号：<span>{{data.orders}}</span></div>
+            <div class="spread_txt">订单状态：<span>{{data.remark}}</span></div>
+            <div class="spread_txtk flof ">产品：<span class="spread_time">{{data.cname}}</span></div>
+            <div class="spread_txtk flor ">用户姓名：<span>{{data.nick_name}}</span></div>
+            <div class="spread_txtk flof ">用户手机：<span class="spread_cp">{{data.mobile}}</span></div>
+            <div class="spread_txtk flor ">提交时间：<span>{{data.addtime | dateFormat:'yyyy/MM/dd'}}</span></div>
+        </div>
+    </div>
+    {{/each}}
+</script>
+
+<script id="part_orders" type="text/html">
+    {{each list as data}}
+    <div class="spread_orderlist">
+        <div class="spread_orderinfo">
+            <div class="spread_txt">订单编号：<span>{{data.orders}}</span></div>
+            <!--<div class="spread_txt">订单状态：<span>{{data.remark}}</span></div>-->
+            <div class="spread_txtk flof ">到账时间：<span class="spread_time">{{data.addtime | dateFormat:'yyyy/MM/dd'}}</span></div>
+            <div class="spread_txtk flor ">收益来源：<span>{{data.mobile}}</span></div>
+            <div class="spread_txtk flof ">说明：<span class="spread_cp">{{data.remark}}</span></div>
+            <div class="spread_txtk flor ">收益金额：<span>{{data.income}}</span></div>
+        </div>
+    </div>
+    {{/each}}
+</script>
+</html>

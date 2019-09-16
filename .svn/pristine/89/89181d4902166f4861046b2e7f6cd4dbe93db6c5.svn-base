@@ -1,0 +1,475 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>代客联盟</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/xueyuan.css"/>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/template.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+</head>
+
+<body>
+<div class="course_page">
+    <div class="search">
+        <div class="search_m">
+            <div class="search_k">
+                <div class="iconfont icon-sousuo ss_icon"></div>
+                <input class="ss_input" type="search" id="searchInput" placeholder="最新口子/课程上新">
+            </div>
+            <div class="search_qx">取消</div>
+        </div>
+    </div>
+    <div class="search_main">
+        <div class="search_nr">
+            <div class="search_jg">
+                <div class="search_no">
+                    <div class="iconfont icon-sad no_icon"></div>
+                    <div class="no_word">暂无数据，换个词搜搜</div>
+                </div>
+
+                <div class="search_have">
+                    <div class="search_title">
+                        <div class="search_dt"></div>
+                        <div class="search_tit">以下为搜索结果</div>
+                    </div>
+                    <div class="have_results" id="result">
+
+                    </div>
+                </div>
+            </div>
+            <div class="search_tj">
+                <div class="search_title">
+                    <div class="search_dt"></div>
+                    <div class="search_tit">热门搜索</div>
+                </div>
+                <div class="search_word" id="keywordList">
+                    <div class="word_li" onclick="keywordSearch(this)">小额贷</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="course_tab">
+        <ul class="course_table">
+            <li class="c_active" id="kc">课程</li>
+            <li>资讯</li>
+        </ul>
+        <div class="course_content">
+            <div class="course_war c_active">
+                <div class="kc_banner" id="goTolearn">
+                    <img src="https://yanju001.oss-cn-beijing.aliyuncs.com/common/20190214/kecheng.png" id="banner">
+                </div>
+                <div class="ke_info">
+                    <div class="kc_introduce">
+                        <div class="kc_title">
+                            <span>课程简介</span>
+                            <div class="kc_join"><span id="maxNum">0</span>人加入课程</div>
+                        </div>
+                        <div class="kc_text">如何通过推广改变自己的生活？代客联盟邀请分销行业专家，满满干货带你快速入门，赶紧加入吧。</div>
+                    </div>
+                    <div class="kc_list" id="cource_list">
+
+                    </div>
+                </div>
+                <!---->
+            </div>
+            <div class="course_war">
+                <div class="zx_list" id="zx_List">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="popup gm_popup" id="goutoBuy" style="display: none">
+    <div class="gm_main" data-level="3" onclick="buyRn(this)" id="buyBtn">
+        <img src="../image/gmts.png">
+        <!--<div class="main_title">购买课程</div>-->
+        <!--<div class="main_txt">购买<span id="levelName">合伙人</span>课程，更多分润！</div>-->
+        <!--<div class="main_txt">营销大师带你飞！</div>-->
+        <!--<div class="main_btn" data-level="3" onclick="buyRn(this)" id="buyBtn">立即购买</div>-->
+    </div>
+    <div class="iconfont icon-chacha-1 close_pop"></div>
+</div>
+</body>
+<script type="text/javascript">
+  //课程/资讯
+  var lastIndex = 0;
+  var token = localStorage.getItem("userToken");
+  var deviceId = localStorage.getItem("deviceId");
+  var showPop = true;
+  apiready = function () {
+    change(1);
+    binding();
+    $("#searchInput").on("click", function () {
+      showKeyWords();
+    })
+  }
+
+
+  function change(index) {
+    if (index == lastIndex) {
+      return;
+    }
+    if (index == 1) {
+      //课程
+      getCource();
+    } else if (index == 2) {
+      //资讯
+      getInformation();
+    }
+    lastIndex = index;
+  }
+
+  //资讯信息
+  function getInformation() {
+    token = localStorage.getItem("userToken");
+    deviceId = localStorage.getItem("deviceId");
+    if (!token) {
+      deviceId = "";
+      token = "";
+    }
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("information"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          informationCB(data);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        neterr();
+        // btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+  function getCource() {
+    token = localStorage.getItem("userToken");
+    deviceId = localStorage.getItem("deviceId");
+    if (!token) {
+      deviceId = "";
+      token = "";
+    }
+    //获取课程信息
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("course"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          courceCB(data);
+        } else {
+          btToast(data.msg, 2000);
+          if (data.code == "50001") {
+            //登录超时
+            localStorage.removeItem("userToken");
+            setTimeout(function () {
+              openwin_header("register", "登录", "register.html", {}, true);
+              api.hideProgress();
+            }, 2000)
+          }
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        neterr();
+        // btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+
+  //搜索
+  function search() {
+    var keyword = $("#searchInput").val();
+    //关键词查询
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("search"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        keyword: keyword
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var result = data.data;
+          if (result.length > 0) {
+            showResult(result);
+          } else {
+            $(".search_no").show();
+            $(".search_have").hide();
+          }
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+  $("#searchInput").on('keypress', function (e) {
+    var keycode = e.keyCode;
+    if (keycode == '13') {
+      //搜索
+      search();
+    }
+  });
+
+  function keywordSearch(obj) {
+    var keyword = $(obj).text().trim();
+    if (keyword) {
+      $("#searchInput").val(keyword);
+      search();
+    }
+  }
+
+  function binding() {
+    $(".course_table li").click(function () {
+      $(".course_table li").removeClass("c_active");
+      $(this).addClass("c_active");
+      var f_index = $(this).index();
+      change(f_index + 1);
+      $(".course_content .course_war").removeClass("c_active");
+      $(".course_content .course_war").eq(f_index).addClass("c_active");
+
+    });
+    $(".close_pop").click(function () {
+      $(this).parents(".popup").hide();
+    });
+    //取消事件
+    $(".search_qx").click(function () {
+      cancel();
+    })
+  }
+
+  function cancel() {
+    $(".search").removeClass("search_xz");
+    $(".course_tab").show();
+    $(".search_main").hide();
+    $("#searchInput").val("");
+  }
+
+  //显示关键词
+  function showKeyWords() {
+    //
+    $(".search").addClass("search_xz");
+    $(".course_tab").hide();
+    $(".search_no").hide();
+    $(".search_have").hide();
+    $.ajax({
+      url: server_url("keyword"),
+      method: "GET",
+      dataType: "JSON",
+      data: {},
+      success: function (data) {
+        if (data && data.code == 0) {
+          var keywords = data.data;
+          var html = "";
+          for (var n in keywords) {
+            html += '<div class="word_li" onclick="keywordSearch(this)">' + keywords[n].keyword + '</div>';
+          }
+          $("#keywordList").html(html);
+          //显示关键词模块
+          $(".search_main").show();
+          $(".search_tj").show();
+          $(".search_jg").show();
+        }
+      }
+    })
+
+  }
+
+  function getMax(arr) {
+    return Math.max.apply(null, arr);
+  }
+
+  //列表第一个课程
+  var firstCourceId = 0;
+  var firstCourceLevel = 4;
+  //用户等级
+  var userLevel = 0;
+
+  function courceCB(data) {
+    userLevel = data.data.level;
+    if (userLevel < 3 && showPop) {
+      $("#").text("合伙人");
+      $("#buyBtn").data("level", 3);
+      $("#goutoBuy").show();
+      showPop = false;
+    }
+    var bannerPath = "https://yanju001.oss-cn-beijing.aliyuncs.com/common/20190214/kecheng.png";
+    if (data.data.banner) {
+      bannerPath = data.data.banner;
+    }
+    $("#banner").attr("src", bannerPath);
+    var list = data.data.list;
+    var html = "<div class=\"kc_title\"><span>课程表</span></div>";
+    var arr = new Array();
+    for (var n in list) {
+      if (n === "0") {
+        firstCourceId = list[n].id;
+        firstCourceLevel = list[n].type;
+      }
+      arr.push(list[n].number);
+      var className = "kc_li kc_tgy";
+      if (list[n].type == 3) {
+        className = "kc_li kc_hhr";
+      } else if (list[n].type == 4) {
+        className = "kc_li kc_jpr";
+      }
+      html += '<div class="' + className + '"' +
+        'onclick=checkLevel(' + list[n].id + ',' + list[n].type + ')>' +
+        '<div class="iconfont icon-dengji-copy ke_dj"></div>' +
+        '<div class="ke_mc">' +
+        '<div class="kc_name">' + list[n].title + '</div>' +
+        '<div class="kc_num"><span>' + list[n].number + '</span>人加入课程</div></div></div>';
+    }
+    $("#cource_list").html(html);
+    $("#maxNum").text(getMax(arr));
+    $("#goTolearn").on("click", function () {
+
+      checkLevel(firstCourceId, firstCourceLevel);
+      // openwin_header_in("cource_detail", "课程内容", "cource_detail.html", {courceId: firstCourceId});
+    });
+  }
+
+  //展示资讯列表
+  function informationCB(data) {
+    var list = data.data;
+    var html = "";
+    for (var n in list) {
+      html += '  <div class="zx_li" onclick=openwin_header_in("infomation","资讯","infomation.html",{zxId:' + list[n].id + '},true) ;>' +
+        '<div class="zx_info">' +
+        '<div class="zx_img"><img src="' + list[n].cimg + '"></div>' +
+        '<div class="zx_main">' +
+        '<div class="zx_title">' + list[n].title + '</div>' +
+        '<div class="zx_jj">' + list[n].keyword + '</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="iconfont icon-more uli_jt"></div>' +
+        '</div>';
+    }
+    $("#zx_List").html(html);
+  }
+
+  //立即购买
+  function buyRn(obj) {
+    var level = $(obj).data("level");
+    $("#goutoBuy").hide();
+    api.execScript({
+      name: 'root',
+      script: 'ctab(' + 2 + ',{level:' + level + '});'
+    });
+
+    api.execScript({
+      name: 'root',
+      frameName: 'partner',
+      script: 'selectLevel_other(' + level + ');'
+    });
+  }
+
+  //判断用户等级是否能查看课程
+  function checkLevel(courceId, courceLevel) {
+    var cparam = {
+      //登录后的跳转
+      exec_win: "root",
+      exec_fra: "xueyuan",
+      exec_fun: "getCource();"
+    };
+    if (!localStorage.getItem("userToken")) {
+      //未登录
+      api.showProgress({title: "", text: "", modal: true});
+      btToast("请先登录", 1000);
+      setTimeout(function () {
+        api.hideProgress();
+        openwin_header_in("register", "登录", "register.html", cparam, true);
+      }, 1000);
+    } else {
+      if (userLevel < courceLevel) {
+        if (courceLevel == 2) {
+          $("#levelName").text("体验官");
+        } else if (courceLevel == 3) {
+          $("#levelName").text("合伙人");
+        } else if (courceLevel == 4) {
+          $("#levelName").text("金牌合伙人");
+        }
+        $("#goutoBuy").show();
+        $("#buyBtn").data("level", courceLevel);
+      } else {
+        openwin_header_in("cource_detail", "课程内容", "cource_detail.html", {courceId: courceId}, true);
+      }
+    }
+  }
+
+
+  //显示搜索结果
+  function showResult(list) {
+    var html = '';
+    for (var n in list) {
+      if (list[n].classify == 1) {
+        //课程
+        html += '<div class="zx_li" onclick=checkLevel(' + list[n].id + ',' + list[n].type + ')>' +
+          '<div class="zx_info">' +
+          '<div class="zx_img"><img src="' + list[n].cimg + '"></div>' +
+          '<div class="zx_main">' +
+          '<div class="zx_title">' + list[n].title + '</div>' +
+          '<div class="zx_jj">' + list[n].keyword + '</div>' +
+          '</div>' +
+          '</div>' +
+          '<div class="iconfont icon-more uli_jt"></div>' +
+          '</div>';
+      } else if (list[n].classify = 2) {
+        //资讯
+        html += '<div class="zx_li" onclick=openwin_header_in("infomation","资讯","infomation.html",{zxId:' + list[n].id + '},true)>' +
+          '<div class="zx_info">' +
+          '<div class="zx_img"><img src="' + list[n].cimg + '"></div>' +
+          '<div class="zx_main">' +
+          '<div class="zx_title">' + list[n].title + '</div>' +
+          '<div class="zx_jj">' + list[n].keyword + '</div>' +
+          '</div>' +
+          '</div>' +
+          '<div class="iconfont icon-more uli_jt"></div>' +
+          '</div>';
+      }
+    }
+    $("#result").html(html);
+    $(".search_no").hide();
+    $(".search_have").show();
+  }
+
+  function reset() {
+    $("#kc").click();
+  }
+</script>
+</html>
+

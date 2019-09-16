@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>UI</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport"/>
+    <meta content="yes" name="apple-mobile-web-app-capable"/>
+    <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+    <meta content="telephone=no" name="format-detection"/>
+    <link rel="stylesheet" href="../iconfont/iconfont.css"/>
+    <link rel="stylesheet" href="../css/ui.css"/>
+    <script src="../js/jquery.js"></script>
+    <script src="../js/template.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../script/api.js"></script>
+</head>
+<body ontouchstart="">
+<div class="scrollview">
+    <header class="m-navbar" id="header">
+        <a href="javascript:api.closeWin();" class="navbar-item"><i class="icon iconfont icon-back"></i></a>
+        <div class="navbar-center"><span class="navbar-title" id="title"></span></div>
+    </header>
+</div>
+</body>
+</html>
+
+<script>
+  apiready = function () {
+    var wname = api.pageParam.wname;
+    var wtitle = api.pageParam.wtitle;
+    var curl = api.pageParam.curl;
+    var cparam = api.pageParam.cparam;
+    var cboun = api.pageParam.cboun;
+    var header = $api.byId('header');
+    $api.fixIos7Bar(header);
+    $api.fixStatusBar(header);
+    $api.html($api.byId('title'), wtitle);
+
+    api.openFrame({
+      name: wname,
+      url: curl,
+      rect: {
+        x: 0,
+        y: $api.offset(header).h,
+        w: api.winWidth,
+        h: api.winHeight - $api.offset(header).h
+      },
+      softInputBarEnabled: false,
+      reload: true,
+      bounces: cboun,
+      progress: {
+        type: "page"
+      },
+      pageParam: cparam
+    });
+  };
+</script>

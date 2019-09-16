@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <script src="../js/common.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/user.css">
+    <title>邀请人列表</title>
+</head>
+<body>
+<div class="myprofile_page">
+    <div class="myprofile_inviter" id="list">
+        <!--<div class="inviter_num">共计邀请人数：<span id="total">0</span>人</div>-->
+        <!--<div class="inviter_list">-->
+        <!--<div class="inviter_info flof ">用户帐号：<span class="">123456789</span></div>-->
+        <!--<div class="inviter_info flof ">用户等级：<span class="">合伙人</span></div>-->
+        <!--<div class="inviter_info flof ">注册时间：<span class="">2019/02/26</span></div>-->
+        <!--&lt;!&ndash;<div class="inviter_info flor ">佣金赚取次数：<span>158次</span></div>&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="inviter_info flor ">佣金赚取总数：<span>12358元</span></div>&ndash;&gt;-->
+        <!--</div>-->
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+  var token = localStorage.getItem("userToken");
+  var deviceId = localStorage.getItem("deviceId");
+  apiready = function () {
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("inviterlist"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          var list = data.data.user_data;
+          var html = '<div class="inviter_num">共计邀请人数：<span>' + data.data.total + '</span>人</div>';
+          $("#total").text(data.data.total);
+          for (var n in list) {
+            html += '<div class="inviter_list">' +
+              '<div class="inviter_info flof ">用户帐号：<span>' + list[n].nick_name + '</span></div>' +
+              '<div class="inviter_info flof ">用户等级：<span>' + list[n].level_name + '</span></div>' +
+              '<div class="inviter_info flof ">注册时间：<span>' + new Date(list[n].regtime).pattern("yyyy-MM-dd") + '</span></div>' +
+              '</div>';
+          }
+          $("#list").html(html);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        btToast("系统繁忙，请稍后再试", 2000);
+      }
+    })
+  }
+
+</script>
+</html>

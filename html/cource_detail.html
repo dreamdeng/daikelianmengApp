@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>代客联盟</title>
+    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/xueyuan.css"/>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <!--<script type="text/javascript" src="../js/template.js"></script>-->
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../js/flexible.js"></script>
+</head>
+
+<body>
+<div class="course_page2">
+    <div class="kcnr_tab">
+        <!--<div class="kcnr_ul">-->
+            <!--<ul class="kcnr_table" id="cource_list">-->
+            <!--</ul>-->
+        <!--</div>-->
+        <div class="course_content">
+            <div class="kenr_war nr_active">
+                <div class="nr_tltle">
+                    <span id="cource_title">课程</span>
+                    <div class="nr_time" id="addTime"></div>
+                </div>
+                <div class="nr_main">
+                    <div class="yh_top">
+                        <div class="yh_info">
+                            <div class="nr_icon">
+                                <img src="../image/tx.png" id="cimg" style="border-radius: 50%;height: 100%;">
+                            </div>
+                            <div class="dklm">
+                                <div class="dk_title" id="wx_nc"></div>
+                                <div class="dk_kf" id="wx_js">代客联盟讲师</div>
+                            </div>
+                        </div>
+                        <div class="add_weixin">
+                            <div class="weixin_icon">
+                                <img src="../image/wx.png">
+                            </div>
+                            <div class="">添加微信</div>
+                        </div>
+                    </div>
+                    <div class="yh_bottom">
+                        <div class="xz_text" id="cource_content">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="popup gm_popup" style="display: none">
+            <div class="gm_main">
+                <div class="main_title">添加讲师</div>
+                <div class="main_txt">微信号：<span id="wx_name"></span></div>
+                <div class="main_btn" onclick="gotoWX()">立即复制并添加</div>
+            </div>
+            <div class="iconfont icon-chacha-1 close_pop"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+  var token = localStorage.getItem("userToken");
+  var deviceId = localStorage.getItem("deviceId");
+  var courceId = 0;
+  var lastCID = 0;
+  apiready = function () {
+    courceId = api.pageParam.courceId;
+    getCourceList();
+    binding();
+  }
+
+
+  function getCourceList(id) {
+    if (id) {
+      if (id == lastCID) {
+        return;
+      } else {
+        lastCID = id;
+      }
+    }
+    if (!id) {
+      id = courceId;
+      lastCID = courceId;
+    }
+    if (!token) {
+      deviceId = "";
+      token = "";
+    }
+    //获取课程信息
+    api.showProgress({title: "", text: "", modal: true});
+    $.ajax({
+      url: server_url("coursedetail"),
+      method: "GET",
+      dataType: "JSON",
+      data: {
+        token: token,
+        deviceid: deviceId,
+        id: id
+      },
+      success: function (data) {
+        if (data.code == 0) {
+          showCource_detail(data.data);
+        } else {
+          btToast(data.msg, 2000);
+        }
+        api.hideProgress();
+      },
+      error: function () {
+        api.hideProgress();
+        neterr();
+      }
+    })
+  }
+
+  function binding() {
+    $(".close_pop").click(function () {
+      $(this).parents(".popup").hide();
+    });
+    $(".add_weixin").click(function () {
+      $(".popup").show();
+    });
+  }
+
+  var isNewLoad = true;
+
+  function showCource_detail(data) {
+    var detail = data.detail;
+    var list = data.list;
+    showDetail(detail);
+    // if (isNewLoad) {
+    //   var html = "";
+    //   for (var n in list) {
+    //     html += ' <li class="flof" data-cid="' + list[n].id + '">' + list[n].title + '</li>';
+    //   }
+    //   $("#cource_list").html(html);
+    //   $(".kcnr_table li").each(function () {
+    //     if ($(this).data("cid") == courceId) {
+    //       $(this).addClass("nr_active");
+    //     }
+    //   })
+    //   isNewLoad = false;
+    // }
+    // //绑定点击事件\\\\
+    // // var kcnr_table = $(".kcnr_table li").length;
+    // var kcnr_table = list.length;
+    // $(".kcnr_table").css({"width": kcnr_table * 2.83 + "rem"})
+    // $(".kcnr_table li").click(function () {
+    //   $(".kcnr_table li").removeClass("nr_active");
+    //   $(this).addClass("nr_active");
+    //   var id = $(this).data("cid");
+    //   getCourceList(id);
+    // });
+  }
+
+  //课程详细信息
+  function showDetail(detail) {
+    $("#cource_title").text(detail.title);
+    $("#addTime").text(detail.addtime);
+    $("#cimg").attr("src", detail.wx_img);
+    $("#wx_nc").text(detail.wx_nc);
+    $("#wx_js").text(detail.wx_js);
+    $("#cource_content").html(detail.content);
+    $("#wx_name").text(detail.wx_name);
+  }
+  function gotoWX() {
+    var wxNum = $("#wx_name").text();
+    clip(wxNum,"是否打开微信？","微信号已复制");
+  }
+</script>
+
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>一键分享</title>
+    <script src="..//js/jquery-2.1.1.min.js"></script>
+    <script src="../js/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../css/spread.css">
+    <script type="text/javascript" src="../js/flexible.js"></script>
+</head>
+<body>
+<div class="tg_page">
+    <div class="fxhb" style="position: relative;">
+        <img src="../image/sharebg.jpg">
+        <div style="position: absolute;bottom: 1.93rem;width: 9.07rem;height: 3.07rem;border-radius: 0.4rem;background: rgba(0,0,0,0.2);margin-left: -4.53rem;left: 50%;display: flex;justify-content: space-between;align-items: center;">
+            <div style="width: 2.51rem;height: 2.51rem;margin-left: 0.85rem;">
+                <img src="../image/cp_img.png">
+            </div>
+            <div style="font-size: 0.56rem;color: #fff;width: 50%;margin-right: 0.61rem;">
+                <div style="text-align: left;">扫码立即下载</div>
+                <div style="text-align: right;">贷款先人一步</div>
+            </div>
+        </div>
+    </div>
+    <div class="foot_fx">
+        <div class="fx_bar">
+            <div class="fx_btn"><img src="../image/fxhb.png"></div>
+            <div class="fx_btn"><img src="../image/xzhb.png"></div>
+            <div class="fx_btn"><img src="../image/fxlj.png"></div>
+            <div class="fx_btn"><img src="../image/fzlj.png"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+
+</script>
+</html>
